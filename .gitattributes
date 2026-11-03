@@ -1,0 +1,12 @@
+# Normalise text to LF in the repository so Windows (CRLF) and WSL checkouts
+# produce identical commits. Binary assets are never altered.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.db binary
+*.sqlite binary

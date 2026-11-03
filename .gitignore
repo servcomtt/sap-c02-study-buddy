@@ -1,0 +1,33 @@
+node_modules/
+_site/
+playwright-report/
+test-results/
+*.pre-expansion.bak
+_to_delete/
+private-work/
+# retired folder name; the published bank lives in lms/bank/
+lms/private/
+practice-questions/*.pdf
+
+# private question bank (community exam dump) - never commit
+question-bank/
+
+# private study material (never publish)
+docs/Q&A/
+docs/*.pdf
+
+# local-only: presentations, notes, reports, working files (never publish)
+SAP-C02-Presentations/
+docs/
+Images/
+resources/
+source/AUTHORING-BRIEF.md
+lms/README.md
+*.tmp
+*.tgz
+.sapmark
+*.url
+*.pdf
+.env
+.DS_Store
+Thumbs.db

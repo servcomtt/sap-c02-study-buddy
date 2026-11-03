@@ -1,0 +1,12 @@
+{
+  "exam-page": "https://aws.amazon.com/certification/certified-solutions-architect-professional/",
+  "aws-docs": "https://docs.aws.amazon.com/",
+  "wa": "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
+  "vpc": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+  "orgs": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html",
+  "control-tower": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
+  "dr": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-workloads-on-aws.html",
+  "cost": "https://docs.aws.amazon.com/cost-management/latest/userguide/what-is-costmanagement.html",
+  "mig-guide": "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/welcome.html",
+  "mig-strategies": "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html"
+}

@@ -1,0 +1,329 @@
+{
+ "1.1": {
+  "title": "Architect network connectivity strategies.",
+  "k": [
+   "AWS Global Infrastructure",
+   "AWS networking concepts (for example, Amazon Virtual Private Cloud [Amazon VPC], AWS Direct Connect, AWS VPN, transitive routing, AWS container services)",
+   "Hybrid DNS concepts (for example, Amazon Route 53 Resolver, on-premises DNS integration)",
+   "Network segmentation (for example, subnetting, IP addressing, connectivity among VPCs)",
+   "Network traﬃc monitoring"
+  ],
+  "s": [
+   "Evaluating connectivity options for multiple VPCs",
+   "Evaluating connectivity options for on-premises, co-location, and cloud integration",
+   "Selecting AWS Regions and Availability Zones based on network and latency requirements",
+   "Troubleshooting traﬃc ﬂows by using AWS tools",
+   "Using service endpoints for service integrations"
+  ]
+ },
+ "1.2": {
+  "title": "Prescribe security controls.",
+  "k": [
+   "AWS Identity and Access Management (IAM) and AWS IAM Identity Center",
+   "Route tables, security groups, and network ACLs",
+   "Encryption keys and certiﬁcate management (for example, AWS Key Management Service [AWS KMS], AWS Certiﬁcate Manager [ACM])",
+   "AWS security, identity, and compliance tools (for example, AWS CloudTrail, AWS Identity and Access Management Access Analyzer, AWS Security Hub, Amazon Inspector)"
+  ],
+  "s": [
+   "Evaluating cross-account access management",
+   "Integrating with third-party identity providers",
+   "Deploying encryption strategies for data at rest and data in transit",
+   "Developing a strategy for centralized security event notiﬁcations and auditing"
+  ]
+ },
+ "1.3": {
+  "title": "Design reliable and resilient architectures.",
+  "k": [
+   "Recovery time objectives (RTOs) and recovery point objectives (RPOs)",
+   "Disaster recovery strategies (for example, using AWS Elastic Disaster Recovery, pilot light, warm standby, and multi-site)",
+   "Data backup and restoration"
+  ],
+  "s": [
+   "Designing disaster recovery solutions based on RTO and RPO requirements",
+   "Implementing architectures to automatically recover from failure",
+   "Developing the optimal architecture by considering scale-up and scale-out options",
+   "Designing an eﬀective backup and restoration strategy"
+  ]
+ },
+ "1.4": {
+  "title": "Design a multi-account AWS environment.",
+  "k": [
+   "AWS Organizations and AWS Control Tower",
+   "Multi-account event notiﬁcations",
+   "AWS resource sharing across environments"
+  ],
+  "s": [
+   "Evaluating the most appropriate account structure for organizational requirements",
+   "Recommending a strategy for central logging and event notiﬁcations",
+   "Developing a multi-account governance model"
+  ]
+ },
+ "1.5": {
+  "title": "Determine cost optimization and visibility strategies.",
+  "k": [
+   "AWS cost and usage monitoring tools (for example, AWS Trusted Advisor, AWS Pricing Calculator, AWS Cost Explorer, AWS Budgets)",
+   "AWS purchasing options (for example, Reserved Instances, Savings Plans, Spot Instances)",
+   "AWS rightsizing visibility tools (for example, AWS Compute Optimizer, Amazon Simple Storage Service [Amazon S3] Storage Lens)"
+  ],
+  "s": [
+   "Monitoring cost and usage with AWS tools",
+   "Developing an eﬀective tagging strategy that maps costs to business units",
+   "Understanding how purchasing options aﬀect cost and performance"
+  ]
+ },
+ "2.1": {
+  "title": "Design a deployment strategy to meet business requirements",
+  "k": [
+   "Infrastructure as code (IaC) (for example, AWS CloudFormation)",
+   "Continuous integration and continuous delivery (CI/CD)",
+   "Change management processes",
+   "Conﬁguration management tools (for example, AWS Systems Manager)"
+  ],
+  "s": [
+   "Determining an application or upgrade path for new services and features",
+   "Selecting services to develop deployment strategies and implement appropriate rollback mechanisms",
+   "Adopting managed services as needed to reduce infrastructure provisioning and patching overhead",
+   "Making advanced technologies accessible by delegating complex development and deployment tasks to AWS"
+  ]
+ },
+ "2.2": {
+  "title": "Design a solution to ensure business continuity",
+  "k": [
+   "AWS Global Infrastructure",
+   "AWS networking concepts (for example, Amazon Route 53, routing methods)",
+   "RTOs and RPOs",
+   "Disaster recovery scenarios (for example, backup and restore, pilot light, warm standby, multi- site)",
+   "Disaster recovery solutions on AWS"
+  ],
+  "s": [
+   "Conﬁguring disaster recovery solutions",
+   "Conﬁguring data and database replication",
+   "Performing disaster recovery testing",
+   "Architecting a backup solution that is automated, is cost-eﬀective, and supports business continuity across multiple Availability Zones or AWS Regions",
+   "Designing an architecture that provides application and infrastructure availability in the event of a disruption",
+   "Using processes and components for centralized monitoring to proactively recover from system failures"
+  ]
+ },
+ "2.3": {
+  "title": "Determine security controls based on requirements",
+  "k": [
+   "IAM",
+   "Route tables, security groups, and network ACLs",
+   "Encryption options for data at rest and data in transit",
+   "AWS service endpoints",
+   "Credential management services",
+   "AWS managed security services (for example, AWS Shield, AWS WAF, Amazon GuardDuty, AWS Security Hub)"
+  ],
+  "s": [
+   "Specifying IAM users and IAM roles that adhere to the principle of least privilege access",
+   "Specifying inbound and outbound network ﬂows by using security group rules and network ACL rules",
+   "Developing attack mitigation strategies for large-scale web applications",
+   "Developing encryption strategies for data at rest and data in transit",
+   "Specifying service endpoints for service integrations",
+   "Developing strategies for patch management to remain compliant with organizational standards"
+  ]
+ },
+ "2.4": {
+  "title": "Design a strategy to meet reliability requirements",
+  "k": [
+   "AWS Global Infrastructure",
+   "AWS storage services and replication strategies (for example Amazon S3, Amazon RDS, Amazon ElastiCache)",
+   "Multi-AZ and multi-Region architectures",
+   "Auto scaling policies and events",
+   "Application integration (for example, Amazon SNS, Amazon SQS, AWS Step Functions)",
+   "Service quotas and limits"
+  ],
+  "s": [
+   "Designing highly available application environments based on business requirements",
+   "Using advanced techniques to design for failure and ensure seamless system recoverability",
+   "Implementing loosely coupled dependencies",
+   "Operating and maintaining high-availability architectures (for example, application failovers, database failovers)",
+   "Using AWS managed services for high availability",
+   "Implementing DNS routing policies (for example, Route 53 latency-based routing, geolocation routing, simple routing)"
+  ]
+ },
+ "2.5": {
+  "title": "Design a solution to meet performance objectives",
+  "k": [
+   "Performance monitoring technologies",
+   "Storage options on AWS",
+   "Instance families and use cases",
+   "Purpose-built databases"
+  ],
+  "s": [
+   "Designing large-scale application architectures for a variety of access patterns",
+   "Designing an elastic architecture based on business objectives",
+   "Applying design patterns to meet performance objectives with caching, buﬀering, and replicas",
+   "Developing a process methodology for selecting purpose-built services for required tasks",
+   "Designing a rightsizing strategy"
+  ]
+ },
+ "2.6": {
+  "title": "Determine a cost optimization strategy to meet solution goals and objectives",
+  "k": [
+   "AWS cost and usage monitoring tools (for example, AWS Cost Explorer, AWS Trusted Advisor, AWS Pricing Calculator)",
+   "Pricing models (for example, Reserved Instances, AWS Savings Plans)",
+   "Storage tiering",
+   "Data transfer costs",
+   "AWS managed service oﬀerings"
+  ],
+  "s": [
+   "Identifying opportunities to select and rightsize infrastructure for cost-eﬀective resources",
+   "Identifying appropriate pricing models",
+   "Performing data transfer modeling and selecting services to reduce data transfer costs",
+   "Developing a strategy and implementing controls for expenditure and usage awareness"
+  ]
+ },
+ "3.1": {
+  "title": "Determine a strategy to improve overall operational excellence.",
+  "k": [
+   "Alerting and automatic remediation strategies",
+   "Disaster recovery planning",
+   "Monitoring and logging solutions (for example, Amazon CloudWatch)",
+   "CI/CD pipelines and deployment strategies (for example, blue/green, all-at-once, rolling)",
+   "Conﬁguration management tools (for example, AWS Systems Manager)"
+  ],
+  "s": [
+   "Determining the most appropriate logging and monitoring strategy",
+   "Evaluating current deployment processes for improvement opportunities",
+   "Prioritizing opportunities for automation within a solution stack",
+   "Recommending the appropriate AWS solution to enable conﬁguration management automation",
+   "Engineering failure scenario activities to support and exercise an understanding of recovery actions"
+  ]
+ },
+ "3.2": {
+  "title": "Determine a strategy to improve security.",
+  "k": [
+   "Data retention, data sensitivity, and data regulatory requirements",
+   "Automated monitoring and remediation strategies (for example, AWS Conﬁg rules)",
+   "Secrets management (for example, Systems Manager, AWS Secrets Manager)",
+   "Principle of least privilege access",
+   "Security-speciﬁc AWS solutions",
+   "Patching practices",
+   "Backup practices and methods"
+  ],
+  "s": [
+   "Evaluating a strategy for the secure management of secrets and credentials",
+   "Auditing an environment for least privilege access",
+   "Reviewing implemented solutions to ensure security at every layer",
+   "Reviewing comprehensive traceability of users and services",
+   "Prioritizing automated responses to the detection of vulnerabilities",
+   "Designing and implementing a patch and update process",
+   "Designing and implementing a backup process",
+   "Employing remediation techniques"
+  ]
+ },
+ "3.3": {
+  "title": "Determine a strategy to improve performance.",
+  "k": [
+   "High-performing systems architectures (for example, auto scaling, instance ﬂeets, placement groups)",
+   "Global service oﬀerings (for example, AWS Global Accelerator, Amazon CloudFront, edge computing services)",
+   "Monitoring tool sets and services (for example, CloudWatch)",
+   "Service level agreements (SLAs) and key performance indicators (KPIs)"
+  ],
+  "s": [
+   "Translating business requirements to measurable metrics",
+   "Testing potential remediation solutions and making recommendations",
+   "Proposing opportunities for the adoption of new technologies and managed services",
+   "Assessing solutions and applying rightsizing based on requirements",
+   "Identifying and examining performance bottlenecks"
+  ]
+ },
+ "3.4": {
+  "title": "Determine a strategy to improve reliability.",
+  "k": [
+   "AWS Global Infrastructure",
+   "Data replication methods",
+   "Scaling methodologies (for example, load balancing, auto scaling)",
+   "High availability and resiliency",
+   "Disaster recovery methods and tools",
+   "Service quotas and limits"
+  ],
+  "s": [
+   "Understanding application growth and usage trends",
+   "Evaluating existing architecture to determine areas that are not suﬃciently reliable",
+   "Remediating single points of failure",
+   "Enabling data replication, self-healing, and elastic features and services"
+  ]
+ },
+ "3.5": {
+  "title": "Identify opportunities for cost optimizations.",
+  "k": [
+   "Cost-conscious architecture choices (for example, using Spot Instances, scaling policies, and rightsizing resources)",
+   "Price model adoptions (for example, Reserved Instances, AWS Savings Plans)",
+   "Networking and data transfer costs",
+   "Cost management, alerting, and reporting"
+  ],
+  "s": [
+   "Analyzing usage reports to identify underutilized and overutilized resources",
+   "Using AWS solutions to identify unused resources",
+   "Designing billing alarms based on expected usage patterns",
+   "Investigating AWS Cost and Usage Reports at a granular level",
+   "Using tagging for cost allocation and reporting"
+  ]
+ },
+ "4.1": {
+  "title": "Select existing workloads and processes for potential migration.",
+  "k": [
+   "Migration assessment and tracking tools (for example, AWS Migration Hub)",
+   "Portfolio assessment",
+   "Asset planning",
+   "Prioritization and migration of workloads (for example, wave planning)"
+  ],
+  "s": [
+   "Completing an application migration assessment",
+   "Evaluating applications according to the seven common migration strategies (7Rs)",
+   "Evaluating total cost of ownership (TCO)"
+  ]
+ },
+ "4.2": {
+  "title": "Determine the optimal migration approach for existing workloads.",
+  "k": [
+   "Data migration options and tools (for example, AWS DataSync, AWS Transfer Family, AWS Snow Family, Amazon S3 Transfer Acceleration)",
+   "Application migration tools (for example, AWS Application Discovery Service, AWS Application Migration Service)",
+   "AWS networking services and DNS (for example, AWS Direct Connect, AWS Site-to-Site VPN, Amazon Route 53)",
+   "Identity services (for example, AWS IAM Identity Center, AWS Directory Service)",
+   "Database migration tools (for example, AWS DMS, AWS SCT)",
+   "Governance tools (for example, AWS Control Tower, AWS Organizations)"
+  ],
+  "s": [
+   "Selecting the appropriate database transfer mechanism",
+   "Selecting the appropriate application transfer mechanism",
+   "Selecting the appropriate data transfer service and migration strategy",
+   "Applying the appropriate security methods to migration tools",
+   "Selecting the appropriate governance model"
+  ]
+ },
+ "4.3": {
+  "title": "Determine a new architecture for existing workloads.",
+  "k": [
+   "Compute services (for example, Amazon EC2, AWS Elastic Beanstalk)",
+   "Containers (for example, Amazon ECS, Amazon EKS, AWS Fargate, Amazon ECR)",
+   "AWS storage services (for example, Amazon EBS, Amazon EFS, Amazon FSx, Amazon S3, AWS Storage Gateway Volume Gateway)",
+   "Databases (for example, Amazon DynamoDB, Amazon OpenSearch Service, Amazon RDS, self- managed databases on Amazon EC2)"
+  ],
+  "s": [
+   "Selecting the appropriate compute platform",
+   "Selecting the appropriate container hosting platform",
+   "Selecting the appropriate storage service",
+   "Selecting the appropriate database platform"
+  ]
+ },
+ "4.4": {
+  "title": "Determine opportunities for modernization and enhancements.",
+  "k": [
+   "Serverless compute oﬀerings (for example, AWS Lambda)",
+   "Containers (for example, Amazon ECS, Amazon EKS, Fargate)",
+   "AWS storage services (for example, Amazon S3, Amazon EFS)",
+   "Purpose-built databases (for example, DynamoDB, Amazon Aurora Serverless, Amazon ElastiCache)",
+   "Integration services (for example, Amazon SQS, Amazon SNS, Amazon EventBridge, AWS Step Functions)"
+  ],
+  "s": [
+   "Identifying opportunities to decouple application components",
+   "Identifying opportunities for serverless solutions",
+   "Selecting the appropriate service for containers",
+   "Identifying opportunities for purpose-built databases",
+   "Selecting the appropriate application integration service"
+  ]
+ }
+}

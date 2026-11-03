@@ -1,0 +1,3590 @@
+module.exports = {
+ "checks": {
+  "continuous-improvement:improve-cost": [
+   {
+    "id": "kc-imp-cost-1",
+    "type": "single",
+    "question": "A company runs a Linux web tier on m5 instances in us-east-1 with a steady 24x7 floor. Over the next year the team plans to move part of the tier to AWS Fargate and part to AWS Lambda, and may shift some workloads to eu-west-1. The team wants the discount to keep applying through those changes without manual exchanges. Which purchase is most appropriate for the steady floor?",
+    "options": [
+     {
+      "key": "A",
+      "text": "An EC2 Instance Savings Plan for the m5 family in us-east-1"
+     },
+     {
+      "key": "B",
+      "text": "Zonal Standard Reserved Instances for the current m5 instances"
+     },
+     {
+      "key": "C",
+      "text": "A Compute Savings Plan sized to the steady hourly floor"
+     },
+     {
+      "key": "D",
+      "text": "Regional Convertible Reserved Instances, exchanged each time the architecture changes"
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: Compute Savings Plans apply to EC2 regardless of instance family, size, OS, tenancy or Region and also to Fargate and Lambda usage, so the discount follows the workload as it moves. A fails because an EC2 Instance Savings Plan is tied to one instance family in one Region and applies to EC2 only, so Fargate, Lambda and eu-west-1 usage would not be covered. B fails because zonal Standard RIs are tied to a specific configuration and AZ and give no AZ or size flexibility; they also do not cover Fargate or Lambda. D fails because Convertible RIs can be exchanged but the question explicitly says no manual exchanges, and RIs are commitments to EC2 instance configurations rather than to Fargate or Lambda usage.",
+    "section": "Commitment pricing: Savings Plans and Reserved Instances",
+    "reference": {
+     "label": "Savings Plans types",
+     "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+    }
+   },
+   {
+    "id": "kc-imp-cost-2",
+    "type": "multi",
+    "question": "Instances in private subnets across three Availability Zones reach Amazon S3 in the same Region through a single NAT gateway in one AZ. The bill shows large NAT gateway data processing and inter-AZ data transfer charges. Which TWO changes reduce cost while keeping the fleet multi-AZ?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create an S3 gateway endpoint and add it to the private route tables"
+     },
+     {
+      "key": "B",
+      "text": "Replace the NAT gateway with an S3 interface endpoint in every AZ for all S3 traffic from the VPC, because interface endpoints have no charge"
+     },
+     {
+      "key": "C",
+      "text": "Deploy a NAT gateway in each AZ and route each AZ's private subnets to the local gateway for the remaining internet traffic"
+     },
+     {
+      "key": "D",
+      "text": "Move all instances into the AZ that hosts the NAT gateway"
+     },
+     {
+      "key": "E",
+      "text": "Add a second NAT gateway in the same AZ to share the load"
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A is correct: gateway endpoints for S3 have no additional charge (no hourly or data processing charge), and traffic to S3 in the same Region then bypasses the NAT gateway. C is correct: same-AZ transfer is free, so per-AZ gateways remove cross-AZ transfer to the NAT, and a NAT gateway lives in one AZ so this also removes a single-AZ dependency. B fails because interface endpoints are billed per AZ-hour and per GB processed, so they cost more than a free gateway endpoint for in-VPC S3 access. D fails because it removes the multi-AZ design the question requires. E fails because a second gateway in the same AZ does not reduce per-GB processing charges and adds an hourly charge.",
+    "section": "Networking and data transfer costs",
+    "reference": {
+     "label": "Reduce NAT gateway data transfer charges",
+     "url": "https://repost.aws/knowledge-center/vpc-reduce-nat-gateway-transfer-costs"
+    }
+   },
+   {
+    "id": "kc-imp-cost-3",
+    "type": "single",
+    "question": "A platform team manages a sandbox AWS account. They want developer roles to be prevented automatically from launching more resources once forecasted monthly spend reaches 90 percent of the budget, with no human step. Which solution meets this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A Cost Explorer report with hourly granularity emailed daily"
+     },
+     {
+      "key": "B",
+      "text": "A Cost Anomaly Detection monitor with an individual alert subscription to Amazon SNS"
+     },
+     {
+      "key": "C",
+      "text": "A CloudWatch EstimatedCharges alarm in us-east-1 that publishes to an SNS topic"
+     },
+     {
+      "key": "D",
+      "text": "An AWS Budgets cost budget with a forecasted 90 percent threshold and an automatically executed action that applies a deny IAM policy"
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: AWS Budgets supports forecasted thresholds and budget actions that run automatically or after approval, including applying an IAM policy or SCP, which can deny provisioning without provisioning any new resources. A fails because Cost Explorer reports are for analysis and have no action capability. B fails because Cost Anomaly Detection detects unusual spend and sends alerts (summaries or SNS notifications) but does not enforce anything and is not a budget-percentage control. C fails because a billing alarm notifies through SNS on the cumulative EstimatedCharges metric; the documented workflow notifies and does not apply a policy, and it has no forecasted threshold in the documented setup.",
+    "section": "Cost alerting: Budgets, billing alarms and anomaly detection",
+    "reference": {
+     "label": "Configuring budget actions",
+     "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"
+    }
+   },
+   {
+    "id": "kc-imp-cost-4",
+    "type": "single",
+    "question": "Last week a finance team required a Project tag on all resources, and engineers applied it. Two days later Cost Explorer still cannot group costs by Project. The company uses AWS Organizations. What should the administrator do?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Activate the Project tag key as a user-defined cost allocation tag in the Billing and Cost Management console of the management account, then allow time for it to take effect"
+     },
+     {
+      "key": "B",
+      "text": "Create an Organizations tag policy for Project, which automatically makes the key available in Cost Explorer"
+     },
+     {
+      "key": "C",
+      "text": "Enable Compute Optimizer so that tags are imported from recommendations"
+     },
+     {
+      "key": "D",
+      "text": "Create a Cost Anomaly Detection monitor on the Project tag, which activates it for reporting"
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct: user-defined tags must be activated on the Cost allocation tags page before they appear in billing reports and Cost Explorer; it can take up to 24 hours for a key to appear for activation and up to 24 more hours to activate, and in an organization activation is done in the payer or management account. B fails because a tag policy standardizes and can enforce tag keys and values on resources but is not what activates a key for billing. C fails because Compute Optimizer produces resource recommendations and does not manage cost allocation tags. D fails because anomaly monitors can use tags as a dimension only for tags that are already cost allocation tags; creating a monitor is not an activation step.",
+    "section": "Cost allocation: tags, Cost Explorer and Data Exports",
+    "reference": {
+     "label": "Activating user-defined cost allocation tags",
+     "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html"
+    }
+   },
+   {
+    "id": "kc-imp-cost-5",
+    "type": "single",
+    "question": "A finance application runs heavy batch processing in the last week of each quarter and is idle otherwise. A 14-day Compute Optimizer analysis in mid-quarter rates an EC2 instance 'over-provisioned' and recommends a much smaller type. The team worries the recommendation ignores the quarter-end peak. Which action addresses this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Buy a three-year Standard Reserved Instance first so the recommendation is locked in"
+     },
+     {
+      "key": "B",
+      "text": "Activate the enhanced infrastructure metrics recommendation preference so Compute Optimizer analyzes up to 93 days of history"
+     },
+     {
+      "key": "C",
+      "text": "Switch the instance to Spot and keep the current size"
+     },
+     {
+      "key": "D",
+      "text": "Disable Compute Optimizer and rely on the Trusted Advisor free checks"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: the default EC2 lookback is 14 days, and enhanced infrastructure metrics, a paid preference, extends analysis up to 93 days so quarterly patterns are captured; it can be turned on at the organization, account or resource level. A fails because a commitment sized to a possibly wrong instance type locks in the error for one to three years; rightsizing comes before committing. C fails because moving to Spot changes interruption risk and does not fix the sizing question, and quarter-end batch work may not be safely interruptible. D fails because the Trusted Advisor documentation says its cost checks need a paid support plan, and Basic Support covers mainly service limits and selected security and fault tolerance checks.",
+    "section": "Finding waste: Compute Optimizer, Trusted Advisor and Cost Optimization Hub",
+    "reference": {
+     "label": "Enhanced infrastructure metrics",
+     "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/enhanced-infrastructure-metrics.html"
+    }
+   }
+  ],
+  "continuous-improvement:improve-performance": [
+   {
+    "id": "kc-imp-perf-1",
+    "type": "single",
+    "question": "A retail platform runs an auto-scaled EC2 web fleet that connects to a PostgreSQL-compatible Aurora cluster. During flash sales the fleet triples in size and the database starts rejecting new connections although CPU on the writer stays moderate. The team wants the smallest change that stops the connection errors. What should the solutions architect do?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Add more Aurora Replicas and point the web fleet at the reader endpoint"
+     },
+     {
+      "key": "B",
+      "text": "Move the database to a larger instance class and leave the application unchanged"
+     },
+     {
+      "key": "C",
+      "text": "Create an RDS Proxy for the cluster and change the application to connect to the proxy endpoint"
+     },
+     {
+      "key": "D",
+      "text": "Place Amazon ElastiCache for Memcached in front of the database and cache all queries"
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: RDS Proxy keeps a pool of established database connections and multiplexes client sessions over them, so a tripled fleet no longer triples database connections, and the change is only a connection string. A fails because replicas serve read-only traffic and do not pool connections; the writer would still receive the same number of write connections. B raises the instance connection ceiling at greater cost but does not remove the churn, and moderate CPU shows compute is not the constraint. D adds a cache that helps repeated reads but does not reduce connections from the application to the database for writes and cache misses, and needs code changes.",
+    "section": "Database scaling: connections, replicas, capacity modes",
+    "reference": {
+     "label": "RDS Proxy concepts",
+     "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.howitworks.html"
+    }
+   },
+   {
+    "id": "kc-imp-perf-2",
+    "type": "multi",
+    "question": "A media site on CloudFront sees its cache hit ratio fall after the marketing team started appending tracking parameters and varying the case of a 'lang' parameter on image URLs. The origin load is climbing. Which TWO actions raise the hit ratio with the least origin change?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Use a cache policy whose cache key includes only the query strings that change the image returned"
+     },
+     {
+      "key": "B",
+      "text": "Add a Lambda@Edge function on the origin request event that strips the tracking parameters"
+     },
+     {
+      "key": "C",
+      "text": "Put AWS Global Accelerator in front of the distribution"
+     },
+     {
+      "key": "D",
+      "text": "Add a CloudFront Function on the viewer request event that lower-cases the lang value and removes unneeded parameters"
+     },
+     {
+      "key": "E",
+      "text": "Increase the instance size of the origin servers"
+     }
+    ],
+    "answer": "AD",
+    "explanation": "A and D are correct. The cache key decides whether a request is a hit, and including only values that alter the response avoids duplicate cached copies; a viewer-request function can normalise remaining variation before the cache lookup. B fails because origin-request functions run only after a cache miss, so the lookup has already used the unnormalised key. C fails because Global Accelerator is not a cache and does not change CloudFront's cache key. E treats the symptom (origin load) by adding capacity and leaves the hit ratio unchanged.",
+    "section": "Global delivery: CloudFront, edge compute and Global Accelerator",
+    "reference": {
+     "label": "Understand the cache key",
+     "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/understanding-the-cache-key.html"
+    }
+   },
+   {
+    "id": "kc-imp-perf-3",
+    "type": "single",
+    "question": "A telemetry pipeline writes to a Kinesis data stream. Two consumer applications read comfortably, but after a third and fourth consumer were added, all consumers show ReadProvisionedThroughputExceeded and fall behind. Write volume has not changed. What is the best fix?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Switch the existing consumers to a longer polling interval"
+     },
+     {
+      "key": "B",
+      "text": "Register the consumers as enhanced fan-out consumers so each gets dedicated read throughput per shard"
+     },
+     {
+      "key": "C",
+      "text": "Enable server-side encryption on the stream"
+     },
+     {
+      "key": "D",
+      "text": "Move the producers to a different Region"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: with shared throughput, all consumers split 2 MB per second per shard and a small number of read transactions per second, so adding consumers exhausts the read side; enhanced fan-out gives each registered consumer its own dedicated 2 MB per second per shard over a push model. A would make consumers fall further behind and does not add read capacity. C changes security, not throughput. D is unrelated because the problem is read-side sharing, not write latency or location.",
+    "section": "Serverless, streaming and analytics performance",
+    "reference": {
+     "label": "Kinesis enhanced fan-out consumers",
+     "url": "https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html"
+    }
+   },
+   {
+    "id": "kc-imp-perf-4",
+    "type": "single",
+    "question": "An Auto Scaling group behind an Application Load Balancer launches instances whose application needs about four minutes to start. The group has ELB health checks enabled and a health check grace period of 60 seconds. Instances are repeatedly terminated and replaced while the service never reaches full capacity. What should be changed?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Switch the group to use only a larger instance type"
+     },
+     {
+      "key": "B",
+      "text": "Disable the load balancer health check permanently"
+     },
+     {
+      "key": "C",
+      "text": "Add a second load balancer in another Region"
+     },
+     {
+      "key": "D",
+      "text": "Increase the health check grace period to exceed the application's real start-up time"
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: Auto Scaling does not mark an instance unhealthy from EC2 or ELB health checks until the grace period expires, so a 60-second period shorter than the four-minute start-up marks healthy-but-starting instances as unhealthy and replaces them. A does not shorten start-up reliably and ignores the cause. B removes load-balancer health awareness and risks routing traffic to broken instances. C adds cost and complexity without fixing the termination loop; a warm pool or pre-baked AMI could further shorten start-up but the grace period is the direct fix.",
+    "section": "Compute scaling, networking and placement",
+    "reference": {
+     "label": "Health check grace period behaviour",
+     "url": "https://repost.aws/knowledge-center/auto-scaling-terminate-instance"
+    }
+   },
+   {
+    "id": "kc-imp-perf-5",
+    "type": "single",
+    "question": "An online game uses UDP traffic to regional Network Load Balancers in two Regions. Players worldwide report variable latency and the studio wants static IP addresses to give to partner firewalls, plus fast failover between Regions. Content is not cacheable. Which service fits best?",
+    "options": [
+     {
+      "key": "A",
+      "text": "AWS Global Accelerator with the NLBs as endpoints"
+     },
+     {
+      "key": "B",
+      "text": "Amazon CloudFront with the NLBs as custom origins"
+     },
+     {
+      "key": "C",
+      "text": "Route 53 latency-based records with a long TTL"
+     },
+     {
+      "key": "D",
+      "text": "S3 Transfer Acceleration"
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct: Global Accelerator provides static anycast IP addresses, brings traffic onto the AWS global network at the nearest edge location, and routes to healthy endpoints such as NLBs by location, health and weights, with no DNS change needed on endpoint change. B is aimed at cacheable HTTP content and does not provide this UDP, static-IP pattern. C gives DNS-level steering only, has no static IPs and slow failover with long TTLs. D is specific to S3 transfers.",
+    "section": "Global delivery: CloudFront, edge compute and Global Accelerator",
+    "reference": {
+     "label": "How AWS Global Accelerator works",
+     "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+    }
+   }
+  ],
+  "continuous-improvement:improve-reliability": [
+   {
+    "id": "kc-rel-1",
+    "type": "single",
+    "question": "A company runs a customer portal on EC2 instances in an Auto Scaling group behind an Application Load Balancer. Several times a month the application process on an instance hangs and returns errors, yet the instance stays 'running' with passing EC2 status checks. The load balancer stops routing to the instance, but capacity stays reduced until an engineer replaces it by hand. Which change makes the fleet recover automatically with the least effort?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Increase the Auto Scaling group's maximum size so the group can absorb the lost capacity."
+     },
+     {
+      "key": "B",
+      "text": "Create a CloudWatch alarm on StatusCheckFailed_System with the recover action for every instance."
+     },
+     {
+      "key": "C",
+      "text": "Set the Auto Scaling group's health check type to ELB and set a health check grace period that covers application start-up time."
+     },
+     {
+      "key": "D",
+      "text": "Move the instances into a cluster placement group to reduce network latency to the load balancer."
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: by default the group uses only EC2 status checks, so an instance whose application hangs is considered healthy. Turning on ELB health checks lets the group mark an instance Unhealthy when the load balancer reports it Unhealthy and replace it, and the grace period prevents new instances from being replaced before they finish booting. A fails because more maximum capacity does not replace a broken instance; the group never sees it as unhealthy. B fails because the recover action responds only to system status check failures (underlying host problems), and here the system and instance status checks pass. D fails because placement groups affect network proximity, not health detection, and a cluster group can even make capacity errors more likely.",
+    "section": "Self-healing compute with EC2 Auto Scaling",
+    "reference": {
+     "label": "Health checks for Auto Scaling instances",
+     "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
+    }
+   },
+   {
+    "id": "kc-rel-2",
+    "type": "multi",
+    "question": "A Lambda function processes messages from a standard SQS queue (function timeout 60 seconds, batch size 10). Valid messages are intermittently landing in the dead-letter queue during bursts when the function is throttled. Which TWO configuration changes best address this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Set the dead-letter queue redrive policy maxReceiveCount to 1 so failures are isolated quickly."
+     },
+     {
+      "key": "B",
+      "text": "Raise the source queue's maxReceiveCount to at least 5."
+     },
+     {
+      "key": "C",
+      "text": "Set the queue visibility timeout to 30 seconds so messages are retried sooner."
+     },
+     {
+      "key": "D",
+      "text": "Set the queue visibility timeout to at least six times the function timeout."
+     },
+     {
+      "key": "E",
+      "text": "Give the dead-letter queue a shorter retention period than the source queue to save cost."
+     }
+    ],
+    "answer": "BD",
+    "explanation": "B and D are correct. AWS recommends a maxReceiveCount of at least 5 for Lambda consumers because throttled or failed invocations consume receives, and a visibility timeout of at least six times the function timeout so that Lambda can retry a batch after throttling before the messages become visible again. A makes the problem worse: a value of 1 sends a message to the DLQ after a single failed receive, which includes throttling. C is wrong because 30 seconds is shorter than the 60-second function timeout, which Lambda rejects when the mapping is created, and in any case messages would reappear while still being processed. E is wrong because expiry is measured from the original enqueue time, so a DLQ with shorter retention can delete messages almost immediately; the DLQ retention should be longer than the source queue's.",
+    "section": "Decoupling: SQS, SNS, Lambda and Step Functions",
+    "reference": {
+     "label": "SQS event source mapping for Lambda",
+     "url": "https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html"
+    }
+   },
+   {
+    "id": "kc-rel-3",
+    "type": "single",
+    "question": "An Aurora MySQL cluster has a writer and two replicas in different Availability Zones. After a failover, a Java application keeps sending writes to the failed instance for several minutes because it caches the DNS result of the cluster endpoint beyond its TTL. The team wants shorter application-visible downtime without a rewrite. What should the solutions architect recommend?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Add a third Aurora Replica in a third Availability Zone."
+     },
+     {
+      "key": "B",
+      "text": "Convert the cluster to an Aurora Global Database with a secondary Region."
+     },
+     {
+      "key": "C",
+      "text": "Create an additional read replica in another Region and promote it during failures."
+     },
+     {
+      "key": "D",
+      "text": "Place Amazon RDS Proxy between the application and the cluster and connect the application to the proxy endpoint."
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: RDS Proxy keeps accepting connections at the same IP address during a failover, tracks the writer from cluster metadata instead of DNS, preserves idle application connections and queues requests while the writer is unavailable, so clients are not exposed to DNS caching or propagation delay. A improves read capacity and failover candidates but does nothing about a client that caches the endpoint, so the cached-DNS delay remains. B addresses Region-level disaster recovery and adds cost and complexity, not an in-Region caching problem. C is a manual cross-Region promotion, which increases recovery time rather than reducing it, and also does not change how the client resolves the endpoint.",
+    "section": "Data tier reliability: databases, caches and warehouses",
+    "reference": {
+     "label": "RDS Proxy with Aurora: failover",
+     "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.howitworks.html"
+    }
+   },
+   {
+    "id": "kc-rel-4",
+    "type": "single",
+    "question": "A web tier in an Auto Scaling group uses a load balancer health check that runs a query against the backend database. During a short database brownout every web instance fails its health check at once, and the group begins terminating and replacing all instances, extending the outage by several minutes. What is the best way to keep fast routing around real failures while avoiding this mass replacement?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Keep the deep check on the load balancer only, use a shallow local check (or EC2 checks) for the Auto Scaling group's replacement decision, and add a separate mechanism such as SetInstanceHealth to replace instances with persistent local faults."
+     },
+     {
+      "key": "B",
+      "text": "Increase the health check grace period to several hours so instances are never replaced."
+     },
+     {
+      "key": "C",
+      "text": "Disable cross-zone load balancing so each Availability Zone is evaluated separately."
+     },
+     {
+      "key": "D",
+      "text": "Replace the Application Load Balancer with a Network Load Balancer and keep the same deep check on the group."
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct and matches AWS guidance: a deep check that includes a dependency should not be attached to the Auto Scaling group, because a transient dependency failure can mark every instance unhealthy simultaneously; the load balancer fails open, but the group starts replacing the whole fleet. Keeping the deep check only on the load balancer still routes around impaired instances or AZ gray failures, while a shallow or EC2-based check avoids mass termination, and a heartbeat plus SetInstanceHealth pattern can still replace persistently broken instances. B fails because a long grace period applies only to new instances and defeats legitimate replacement. C does not change how health is evaluated and would not stop the group from replacing instances that report unhealthy. D changes the load balancer type but keeps the same dangerous coupling between a dependency and fleet replacement.",
+    "section": "Load balancer health checks and traffic failover",
+    "reference": {
+     "label": "Choosing the right health check with ELB and EC2 Auto Scaling",
+     "url": "https://aws.amazon.com/blogs/networking-and-content-delivery/choosing-the-right-health-check-with-elastic-load-balancing-and-ec2-auto-scaling/"
+    }
+   },
+   {
+    "id": "kc-rel-5",
+    "type": "single",
+    "question": "A production file share runs on a Single-AZ Amazon FSx for Windows File Server file system. The business now requires automatic failover during an Availability Zone disruption, with the same Active Directory integration. What is the correct approach?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Modify the existing file system and change its deployment type to Multi-AZ during the maintenance window."
+     },
+     {
+      "key": "B",
+      "text": "Create a new Multi-AZ FSx for Windows file system, copy the data and share configuration (for example with AWS DataSync), and cut clients over."
+     },
+     {
+      "key": "C",
+      "text": "Update the file system storage type to SSD, which makes the file system span two Availability Zones."
+     },
+     {
+      "key": "D",
+      "text": "Enable cross-zone load balancing on the file system's network interface."
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: the deployment type of an existing FSx for Windows file system cannot be changed (Security Hub control FSx.5 and the AWS Backup restore documentation both state this), so the documented path is to create a Multi-AZ file system and migrate data and share settings, for example with DataSync and Systems Manager automation, then switch clients. A fails because there is no in-place modification of the deployment type. C fails because the SSD storage type changes performance characteristics only (HDD can be updated to SSD, not back) and does not add a standby AZ. D fails because cross-zone load balancing is a load balancer feature and does not apply to FSx network interfaces. Multi-AZ itself provides a preferred and standby file server with synchronous replication and automatic failover.",
+    "section": "Removing single points of failure in storage, network and platform",
+    "reference": {
+     "label": "FSx for Windows: Single-AZ vs Multi-AZ",
+     "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html"
+    }
+   }
+  ],
+  "continuous-improvement:improve-security": [
+   {
+    "id": "kc-sec-1",
+    "type": "single",
+    "question": "A payments API on Lambda reads an Amazon RDS password from a Lambda environment variable. Security requires the password to change every 30 days without code changes or outages, and wants minimal custom code. What should the architect do?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Store the password as a Systems Manager Parameter Store SecureString and update it manually every 30 days"
+     },
+     {
+      "key": "B",
+      "text": "Encrypt the environment variable with a KMS key and rotate the KMS key every 30 days"
+     },
+     {
+      "key": "C",
+      "text": "Store the credential in AWS Secrets Manager, enable automatic rotation on a 30-day schedule, and have the function read the secret at runtime with an IAM role"
+     },
+     {
+      "key": "D",
+      "text": "Keep the variable and trigger a monthly EventBridge rule that invokes a Lambda function to rewrite the variable"
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: Secrets Manager provides scheduled rotation by calling a rotation function (or managed rotation) and the application fetches the current version at runtime, so no code deploy or outage is needed. A fails because Parameter Store does not provide automatic rotation services for stored secrets; AWS docs direct rotation needs to Secrets Manager. B fails because rotating a KMS key changes key material for encryption, not the database password. D adds custom code and still leaves the credential in an environment variable that needs redeployment of configuration and is not an audited secret store.",
+    "section": "Secrets and credentials",
+    "reference": {
+     "label": "Rotation by Lambda function",
+     "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_lambda.html"
+    }
+   },
+   {
+    "id": "kc-sec-2",
+    "type": "multi",
+    "question": "A team will use IAM Access Analyzer policy generation to replace a broad policy on an application role. Which TWO statements are accurate?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A CloudTrail trail logging the account's events must exist before a policy can be generated"
+     },
+     {
+      "key": "B",
+      "text": "The generated policy automatically includes iam:PassRole and all S3 object-level actions the role used"
+     },
+     {
+      "key": "C",
+      "text": "The look-back period can be up to 365 days"
+     },
+     {
+      "key": "D",
+      "text": "Action-level activity for data events such as S3 data events is not identified, so the output must be reviewed and supplemented"
+     },
+     {
+      "key": "E",
+      "text": "The generated policy is attached to the role automatically and cannot be edited"
+     }
+    ],
+    "answer": "AD",
+    "explanation": "A and D are correct: the docs require a CloudTrail trail, and say Access Analyzer does not identify action-level activity for data events, so you must add those permissions after review. B is wrong because iam:PassRole is not tracked by CloudTrail and data events are not identified. C is wrong because the maximum period is 90 days. E is wrong because you review, customize (add or remove permissions, resources, conditions), then choose to save it as a managed policy and attach it yourself.",
+    "section": "Least privilege",
+    "reference": {
+     "label": "IAM Access Analyzer policy generation",
+     "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html"
+    }
+   },
+   {
+    "id": "kc-sec-3",
+    "type": "single",
+    "question": "A company introduces an AWS WAF web ACL in front of a production ALB. A new custom rule might match some legitimate mobile clients. The company must not block valid users while measuring the rule's effect. What is the BEST approach?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Set the rule action to Block and remove it if users complain"
+     },
+     {
+      "key": "B",
+      "text": "Set the rule action to Count, enable logging and sampled requests, review matches, tune, then change the action to Block"
+     },
+     {
+      "key": "C",
+      "text": "Deploy the rule only in a security group"
+     },
+     {
+      "key": "D",
+      "text": "Enable Shield Advanced automatic mitigation instead of the custom rule"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: Count evaluates requests, records matches in metrics, sampled requests and logs, and does not block, so false positives can be found and the rule tuned before promotion to Block. A blocks legitimate users before you know the impact. C is invalid because security groups cannot inspect HTTP request content. D is a different control for DDoS events; it does not test your custom rule and is available only for CloudFront and ALB with a web ACL.",
+    "section": "Edge and network layers",
+    "reference": {
+     "label": "Analyze Count mode rules",
+     "url": "https://repost.aws/knowledge-center/waf-analyze-count-action-rules"
+    }
+   },
+   {
+    "id": "kc-sec-4",
+    "type": "single",
+    "question": "A regulated firm must guarantee that backups in a central vault cannot be deleted or have their retention shortened by any user, including administrators and AWS, until retention expires. Which AWS Backup configuration meets this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Governance-mode Vault Lock restricted by IAM policy"
+     },
+     {
+      "key": "B",
+      "text": "A vault access policy denying DeleteRecoveryPoint to all except the root user"
+     },
+     {
+      "key": "C",
+      "text": "Cross-Region copy of recovery points"
+     },
+     {
+      "key": "D",
+      "text": "Compliance-mode Vault Lock, after the grace period ends"
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: once the cooling-off grace time (at least 72 hours) ends, a compliance-mode lock cannot be altered or removed by any user or by AWS. A fails because governance mode can be managed or removed by users with sufficient IAM permissions. B fails because a policy can be edited by those with permission and does not give immutability. C improves resilience to Regional events but does not prevent deletion of copies.",
+    "section": "Backup",
+    "reference": {
+     "label": "AWS Backup Vault Lock",
+     "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+    }
+   },
+   {
+    "id": "kc-sec-5",
+    "type": "single",
+    "question": "An ECS service on Fargate pulls images from a private ECR repository and injects a Secrets Manager secret as an environment variable at launch. Tasks fail to start with an authorization error resolving the secret, though the application code itself would only call S3. Which change is needed?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Add secretsmanager:GetSecretValue (and kms:Decrypt if a customer managed key is used) to the task execution role"
+     },
+     {
+      "key": "B",
+      "text": "Add secretsmanager:GetSecretValue to the task role only"
+     },
+     {
+      "key": "C",
+      "text": "Add an inbound rule on port 443 to the task's security group"
+     },
+     {
+      "key": "D",
+      "text": "Attach AmazonS3FullAccess to the task role"
+     },
+     {
+      "key": "E",
+      "text": "Enable Block Public Access on the secret"
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct: secrets referenced in the task definition are retrieved at launch by the ECS agent, which uses the task execution role; the docs list Secrets Manager and Parameter Store references among the execution role use cases. B is wrong because task role credentials go to the application containers, not the agent. C is irrelevant: outbound access is needed, not an inbound rule, and the error is authorization. D grants unneeded broad S3 access, violating least privilege. E is not a Secrets Manager setting that would fix a denied call.",
+    "section": "Least privilege",
+    "reference": {
+     "label": "ECS task execution IAM role",
+     "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html"
+    }
+   }
+  ],
+  "continuous-improvement:operational-excellence": [
+   {
+    "id": "kc-opex-1",
+    "type": "single",
+    "question": "A platform team wants a single page to fire only when the error rate and latency alarms are both in ALARM, and they also want an unhealthy instance rebooted automatically when its own status check alarm fires. Which design meets both needs?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create one composite alarm over both metric alarms and also attach the EC2 reboot action to that composite alarm"
+     },
+     {
+      "key": "B",
+      "text": "Create a composite alarm for the page, and attach the EC2 reboot action to a separate metric alarm on the instance"
+     },
+     {
+      "key": "C",
+      "text": "Create a composite alarm that watches the instance CPU metric directly and invokes the reboot action"
+     },
+     {
+      "key": "D",
+      "text": "Use anomaly detection on the error rate and attach both the SNS topic and the reboot action to the anomaly detection model"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: a composite alarm only evaluates the states of other alarms, can notify through SNS or create Systems Manager OpsItems and incidents, but cannot start EC2 or Auto Scaling actions, so the reboot belongs on a metric alarm for the instance. A fails because attaching a reboot action to a composite alarm is not possible. C fails because composite alarms cannot monitor metrics directly. D fails because anomaly detection is a way of defining an alarm's threshold band, it is not an action target and does not combine two alarms into one page.",
+    "section": "CloudWatch metrics and alarms",
+    "reference": {
+     "label": "Combine multiple CloudWatch alarms into one alarm",
+     "url": "https://repost.aws/knowledge-center/cloudwatch-combine-metrics-alarms"
+    }
+   },
+   {
+    "id": "kc-opex-2",
+    "type": "single",
+    "question": "An Auto Scaling group has a lifecycle hook on instance termination created with no explicit timeout or default result. The flush script never calls CompleteLifecycleAction. What is true about the hook's configured behaviour?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The heartbeat timeout is 30 seconds and the default result is CONTINUE"
+     },
+     {
+      "key": "B",
+      "text": "The heartbeat timeout is 7200 seconds and the default result is CONTINUE"
+     },
+     {
+      "key": "C",
+      "text": "The heartbeat timeout is 600 seconds and the default result is ABANDON"
+     },
+     {
+      "key": "D",
+      "text": "The heartbeat timeout is 3600 seconds and the default result is ABANDON"
+     },
+     {
+      "key": "E",
+      "text": "The hook never times out until the action is completed"
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: the documented defaults are a heartbeat timeout of 3600 seconds (one hour) and a DefaultResult of ABANDON, with a valid timeout range of 30 to 7200 seconds. A and C quote values that are not the documented defaults. B uses the maximum of the range, not the default, and the wrong default result. E is wrong because the hook does time out; when it does, the default result is applied, and while it waits the instance sits in Terminating:Wait and simple-scaling activity pauses.",
+    "section": "Deployment strategies and CI/CD",
+    "reference": {
+     "label": "Lifecycle hook specification",
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-autoscaling-autoscalinggroup-lifecyclehookspecification.html"
+    }
+   },
+   {
+    "id": "kc-opex-3",
+    "type": "multi",
+    "question": "Which TWO statements about CloudWatch Logs metric filters are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A new filter does not create metrics from log events that were ingested before it was created"
+     },
+     {
+      "key": "B",
+      "text": "You can set a default value of 0 on a filter that also publishes dimensions"
+     },
+     {
+      "key": "C",
+      "text": "Using a field such as client IP address as a dimension can create very many billable custom metrics and the filter can be disabled"
+     },
+     {
+      "key": "D",
+      "text": "A filter can publish up to ten dimensions"
+     },
+     {
+      "key": "E",
+      "text": "A log group can have at most five metric filters"
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A and C are correct. Metric filters are not retroactive, so only events after creation are converted. Each distinct dimension value is a separate custom metric, high-cardinality fields like IP address or request ID are discouraged, and a filter generating 1,000 distinct dimension name/value pairs within an hour may be disabled. B is false because a default value cannot be assigned when dimensions are used. D is false because the limit is three dimensions per filter. E is false because a log group supports up to 100 metric filters.",
+    "section": "CloudWatch Logs and the unified agent",
+    "reference": {
+     "label": "Creating metrics from log events using filters",
+     "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html"
+    }
+   },
+   {
+    "id": "kc-opex-4",
+    "type": "single",
+    "question": "A fleet contains Windows and RHEL servers in a dev and a prod environment, all patched by Systems Manager. Dev must receive patches before prod, using OS-appropriate baselines. How should patch groups be organized?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Use one Patch Group value for everything and register two baselines to it"
+     },
+     {
+      "key": "B",
+      "text": "Put each server in two patch groups, one per OS and one per environment"
+     },
+     {
+      "key": "C",
+      "text": "Use separate Patch Group tag values per environment and operating system, each registered with one matching baseline"
+     },
+     {
+      "key": "D",
+      "text": "Use a single baseline for all OS types and rely on maintenance windows to separate them"
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: a patch group can be registered with only one patch baseline and a node can be part of only one patch group, and baselines are OS-specific, so the combination of environment and OS (for example appname-DEV-WIN and appname-DEV-RHEL) gets its own group, which also lets dev patch earlier than prod in staggered maintenance windows. A fails because a group takes only one baseline. B fails because a node can be in only one patch group. D fails because a baseline targets one operating system and maintenance windows control timing, not baseline selection.",
+    "section": "Systems Manager for configuration management",
+    "reference": {
+     "label": "Patching process and patch groups",
+     "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/automated-patching-mutable-instances-hybrid-cloud-aws-systems-manager/process.html"
+    }
+   },
+   {
+    "id": "kc-opex-5",
+    "type": "single",
+    "question": "Last month an administrator created a hybrid activation for 200 on-premises servers. The activation has now expired and 150 servers are registered. What is the effect?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The 150 stay registered as managed nodes, but no additional servers can register with that activation"
+     },
+     {
+      "key": "B",
+      "text": "The 150 registered servers become unmanaged and must be re-registered"
+     },
+     {
+      "key": "C",
+      "text": "All 200 servers can still register until the activation is deleted"
+     },
+     {
+      "key": "D",
+      "text": "The registered servers keep working only until their agent restarts"
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct: an expired activation only closes the window for registering more machines; machines that were already registered remain managed nodes until they are explicitly deregistered (Fleet Manager or deregister-managed-instance). To register the remaining 50 you create a new activation and use the new code and ID. B, C and D describe behaviour the documentation does not support: expiry does not unregister nodes, does not allow further registrations, and does not depend on agent restarts.",
+    "section": "Systems Manager for configuration management",
+    "reference": {
+     "label": "Hybrid activation",
+     "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/hybrid-activation-managed-nodes.html"
+    }
+   }
+  ],
+  "migration-modernization:migration-approach": [
+   {
+    "id": "kc-migapp-1",
+    "type": "single",
+    "question": "A company must move 120 physical and virtual servers (Windows and Linux) from its data centre to EC2 with no application changes, continuous replication until cutover, and a cutover outage under an hour. Which approach fits best?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Export each server as a VMDK and import it with VM Import/Export"
+     },
+     {
+      "key": "B",
+      "text": "Create AWS DMS tasks for each server with full load and CDC"
+     },
+     {
+      "key": "C",
+      "text": "Install the AWS Replication Agent on each server and use AWS Application Migration Service (MGN) for test and cutover launches"
+     },
+     {
+      "key": "D",
+      "text": "Schedule AWS DataSync tasks from each server to Amazon S3 and rebuild the instances from the files"
+     }
+    ],
+    "answer": "C",
+    "explanation": "MGN replicates source disks continuously at block level into a staging area subnet and converts them to run natively on EC2 at test and cutover, which gives the short cutover window and works for physical, virtual and other-cloud servers. VM Import/Export is a one-time image copy with no continuous replication, and P2V-created VMs are not supported, so physical servers and the outage requirement fail. DMS replicates database data, not whole servers. DataSync copies files and objects; it would not preserve the operating system or boot configuration, so rebuilding would break the 'no application changes' constraint.",
+    "section": "Server rehost: AWS Transform MGN and VM Import/Export",
+    "reference": {
+     "label": "Launching cutover instances (MGN)",
+     "url": "https://docs.aws.amazon.com/mgn/latest/ug/launch-cutover.html"
+    }
+   },
+   {
+    "id": "kc-migapp-2",
+    "type": "multi",
+    "question": "An Oracle database and a MySQL database are being migrated with AWS DMS full-load-and-cdc tasks. Which TWO source-side settings are needed so change data capture can work?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Configure MySQL for statement-based binary logging only"
+     },
+     {
+      "key": "B",
+      "text": "Configure MySQL with row-level binary logging"
+     },
+     {
+      "key": "C",
+      "text": "Disable archive and redo logging on Oracle to reduce overhead"
+     },
+     {
+      "key": "D",
+      "text": "Enable supplemental logging on the Oracle source"
+     },
+     {
+      "key": "E",
+      "text": "Install the AWS Replication Agent on both database servers"
+     }
+    ],
+    "answer": "BD",
+    "explanation": "DMS CDC reads the engine's transaction log with engine-specific APIs. Oracle needs supplemental logging so redo records contain enough column data, and MySQL needs row-level binary logging. Statement-based logging does not give DMS the row changes it applies, so option A fails. Disabling Oracle redo or archive logging removes the very log DMS reads (LogMiner or binary reader), so C fails. The Replication Agent belongs to MGN server replication and has no role in DMS.",
+    "section": "Database migration: AWS DMS, DMS Schema Conversion and AWS SCT",
+    "reference": {
+     "label": "Creating tasks for ongoing replication using AWS DMS",
+     "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html"
+    }
+   },
+   {
+    "id": "kc-migapp-3",
+    "type": "single",
+    "question": "A team wants an AWS DataSync task to copy changed files from an on-premises NFS server to Amazon S3 every 15 minutes. Which statement is correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Not possible: scheduled DataSync tasks cannot run more often than once per hour, so a different approach or manual executions are needed"
+     },
+     {
+      "key": "B",
+      "text": "Possible: use rate(15 minutes) in the task schedule"
+     },
+     {
+      "key": "C",
+      "text": "Possible only in Enhanced mode with a cron expression"
+     },
+     {
+      "key": "D",
+      "text": "Possible only if the agent is deployed as an EC2 instance"
+     }
+    ],
+    "answer": "A",
+    "explanation": "DataSync task schedules use cron or rate expressions with a minimum interval of one hour and cannot be faster, so a 15 minute schedule is rejected whatever the expression style or mode. The rate(15 minutes) option therefore fails; rate(12 hours) is the style of valid example. Task mode (Enhanced or Basic) affects object scale and verification behaviour, not the schedule floor, and the agent form factor (VM or EC2) does not change the scheduling limit either. For sub-hour sync you would need a different design such as a gateway or application-level replication.",
+    "section": "Online data transfer: DataSync, Transfer Acceleration and Transfer Family",
+    "reference": {
+     "label": "Scheduling when your DataSync task runs",
+     "url": "https://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html"
+    }
+   },
+   {
+    "id": "kc-migapp-4",
+    "type": "single",
+    "question": "A data centre needs about 2.4 Gbps of encrypted throughput to AWS over Site-to-Site VPN this week, terminating on a transit gateway. Each standard tunnel is limited to 1.25 Gbps. Which design meets the need without ordering new circuits?",
+    "options": [
+     {
+      "key": "A",
+      "text": "One VPN connection with static routing; the transit gateway will load-balance flows across both tunnels automatically"
+     },
+     {
+      "key": "B",
+      "text": "A single tunnel with a larger EC2 instance behind it"
+     },
+     {
+      "key": "C",
+      "text": "Order a dedicated Direct Connect connection and wait for the cross-connect"
+     },
+     {
+      "key": "D",
+      "text": "Two or more VPN connections using dynamic BGP routing, with equal-cost multi-path (ECMP) enabled on the transit gateway"
+     }
+    ],
+    "answer": "D",
+    "explanation": "Each standard tunnel tops out at 1.25 Gbps, so the 2.4 Gbps target needs several tunnels used in parallel. On a transit gateway, ECMP aggregates tunnels but only for connections configured with dynamic (BGP) routing; static routing does not support ECMP, which eliminates A. Instance size on the AWS side does not raise the per-tunnel limit, so B fails. A new dedicated Direct Connect connection can take weeks to months to provision, which misses the this-week deadline in C.",
+    "section": "Network path and DNS cutover: Direct Connect, Site-to-Site VPN, Route 53",
+    "reference": {
+     "label": "Site-to-Site VPN quotas",
+     "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-limits.html"
+    }
+   },
+   {
+    "id": "kc-migapp-5",
+    "type": "single",
+    "question": "A company with 20,000 users in a self-managed on-premises Active Directory wants those users to sign in to AWS through IAM Identity Center and to join EC2 instances to the existing domain. Security forbids copying directory data into AWS and requires existing AD password policies to apply. Which directory option fits?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Simple AD"
+     },
+     {
+      "key": "B",
+      "text": "AD Connector"
+     },
+     {
+      "key": "C",
+      "text": "AWS Managed Microsoft AD with a new set of users"
+     },
+     {
+      "key": "D",
+      "text": "Active Directory domain controllers on EC2 with a new forest"
+     },
+     {
+      "key": "E",
+      "text": "Amazon Cognito user pool"
+     }
+    ],
+    "answer": "B",
+    "explanation": "AD Connector is a proxy to the existing self-managed AD: it does not cache or replicate directory data to AWS, it applies the on-premises security policies such as password expiry and lockout, it supports EC2 domain join and it integrates with IAM Identity Center. Simple AD is a low-scale Samba-based directory and is not supported as an IAM Identity Center source. A new Managed AD with new users, or domain controllers on EC2, would hold directory data in AWS and break the no-copy rule. Cognito targets application customers rather than the workforce AD scenario.",
+    "section": "Securing migration tools and choosing a governance model",
+    "reference": {
+     "label": "What is AWS Directory Service",
+     "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+    }
+   }
+  ],
+  "migration-modernization:modernization": [
+   {
+    "id": "kc-mod-1",
+    "type": "single",
+    "question": "A payments team consumes order-update commands from a queue. Updates for the same customer must be applied in the order sent, and a command must never be applied twice. Peak volume is about 2,000 messages per second, and producers can send in batches of 10. Which design best fits?",
+    "options": [
+     {
+      "key": "A",
+      "text": "SQS standard queue with several consumers, relying on timestamps in the message body"
+     },
+     {
+      "key": "B",
+      "text": "SQS FIFO queue using the customer ID as the message group ID and batched sends"
+     },
+     {
+      "key": "C",
+      "text": "SNS standard topic with an HTTPS subscriber that writes to the database"
+     },
+     {
+      "key": "D",
+      "text": "EventBridge custom bus with a rule targeting a Lambda function"
+     }
+    ],
+    "answer": "B",
+    "explanation": "FIFO queues preserve order within a message group and provide exactly-once processing; by default they support up to 3,000 messages per second with batching (300 without), so 2,000 per second batched fits. A is wrong because standard queues give best-effort ordering and at-least-once delivery, so reordering and duplicates can occur regardless of timestamps. C is wrong because SNS standard topics do not guarantee order, do not persist messages, and give at-least-once delivery to HTTP/S endpoints. D is wrong because EventBridge provides no ordering guarantees and delivers at least once.",
+    "section": "Integration services I: SQS and SNS",
+    "reference": {
+     "label": "Amazon SQS Features",
+     "url": "https://aws.amazon.com/sqs/features/"
+    }
+   },
+   {
+    "id": "kc-mod-2",
+    "type": "multi",
+    "question": "Which TWO statements about AWS Step Functions workflow types are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Standard workflows can run for up to one year and use an exactly-once execution model."
+     },
+     {
+      "key": "B",
+      "text": "Express workflows support the Wait for Callback (.waitForTaskToken) integration pattern."
+     },
+     {
+      "key": "C",
+      "text": "Express workflows can run for up to five minutes and use an at-least-once model for asynchronous executions."
+     },
+     {
+      "key": "D",
+      "text": "You can convert a Standard state machine to Express after creation without recreating it."
+     },
+     {
+      "key": "E",
+      "text": "Express workflows are billed per state transition."
+     }
+    ],
+    "answer": "AC",
+    "explanation": "Standard workflows run up to one year with exactly-once semantics, and Express workflows run up to five minutes with at-least-once semantics for asynchronous executions, so A and C are correct. B is wrong because Express supports only the Request Response pattern, not .sync or .waitForTaskToken. D is wrong because the workflow type is immutable after the state machine is created. E is wrong because Standard is billed per state transition, while Express is billed by number of executions, duration and memory.",
+    "section": "Integration services II: EventBridge and Step Functions",
+    "reference": {
+     "label": "Choosing workflow type in Step Functions",
+     "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+    }
+   },
+   {
+    "id": "kc-mod-3",
+    "type": "single",
+    "question": "A team wants to audit every item-level change to a DynamoDB table and replay changes made up to three days ago to rebuild a downstream search index. They plan to rely only on DynamoDB Streams with a Lambda trigger. What is the problem with this plan?",
+    "options": [
+     {
+      "key": "A",
+      "text": "DynamoDB Streams can be consumed by only one Lambda function, so the index cannot be rebuilt."
+     },
+     {
+      "key": "B",
+      "text": "Stream records cannot include the item values before and after the change."
+     },
+     {
+      "key": "C",
+      "text": "Stream data is kept for only 24 hours, so changes older than that cannot be replayed from the stream."
+     },
+     {
+      "key": "D",
+      "text": "DynamoDB Streams requires the table to use provisioned capacity mode."
+     }
+    ],
+    "answer": "C",
+    "explanation": "DynamoDB Streams data has a 24-hour lifetime, and older records can be trimmed at any time, so a three-day replay needs another store, for example records archived to S3 as they arrive. A is wrong because you can subscribe up to two Lambda functions to a stream (more than two can cause read throttling), so it is not limited to one. B is wrong because streams can be configured to show items as they appeared before and after modification. D is wrong because the stream feature is independent of the table capacity mode, and on-demand tables are supported.",
+    "section": "Purpose-built databases: DynamoDB, Aurora serverless and ElastiCache",
+    "reference": {
+     "label": "Change data capture for DynamoDB Streams",
+     "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html"
+    }
+   },
+   {
+    "id": "kc-mod-4",
+    "type": "single",
+    "question": "A reporting database for a development team is used only during business hours and sits idle at night and on weekends. The team uses PostgreSQL and wants the lowest cost with no manual stop/start. Which configuration meets this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Aurora PostgreSQL with Aurora Serverless v2 and a minimum capacity of 0 ACUs with an auto-pause delay"
+     },
+     {
+      "key": "B",
+      "text": "Aurora PostgreSQL with Aurora Serverless v2 and a minimum capacity of 0.5 ACUs"
+     },
+     {
+      "key": "C",
+      "text": "A provisioned Aurora PostgreSQL instance with a Reserved Instance"
+     },
+     {
+      "key": "D",
+      "text": "DynamoDB with provisioned capacity set to the peak daytime level"
+     }
+    ],
+    "answer": "A",
+    "explanation": "Setting the minimum capacity to 0 ACUs enables automatic pause after the configured idle period (300 to 86,400 seconds), so the database stops consuming compute when unused and resumes on connection. B is wrong because a minimum of 0.5 ACUs or greater disables auto-pause, so you pay for at least that capacity continuously. C is wrong because a provisioned instance bills all the time and a reservation lowers rate but not idle waste. D is wrong because it changes the data model away from PostgreSQL and provisioned capacity bills for peak levels even when idle. Auto-pause depends on the Aurora version supporting it.",
+    "section": "Purpose-built databases: DynamoDB, Aurora serverless and ElastiCache",
+    "reference": {
+     "label": "Introducing scaling to 0 capacity with Amazon Aurora Serverless v2",
+     "url": "https://aws.amazon.com/blogs/database/introducing-scaling-to-0-capacity-with-amazon-aurora-serverless-v2/"
+    }
+   },
+   {
+    "id": "kc-mod-5",
+    "type": "single",
+    "question": "A central platform account runs an event bus. Application accounts in the same AWS Organization must publish domain events to it, and the platform account routes them to team-owned targets by content. Which approach is correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create an SNS topic in each application account and subscribe the platform account's SQS queues."
+     },
+     {
+      "key": "B",
+      "text": "Enable cross-Region replication on the application accounts' default event buses."
+     },
+     {
+      "key": "C",
+      "text": "Create an SQS queue in the platform account and share the URL with application accounts."
+     },
+     {
+      "key": "D",
+      "text": "Attach a resource-based policy to the platform event bus allowing the application accounts to put events, then create rules in each application account targeting that bus using a role with events:PutEvents, and create matching rules on the platform bus."
+     }
+    ],
+    "answer": "D",
+    "explanation": "EventBridge cross-account delivery needs the receiver bus policy to allow the sender accounts (or the organization), a sender rule whose target is the receiver bus using an IAM role with events:PutEvents on it, and receiver rules that match the incoming events, giving content-based routing. A can work for fan-out but gives attribute-based filtering and no native bus routing, so it does not match the described bus design. B is wrong because cross-Region replication is not a cross-account publishing mechanism. C is wrong because it removes event-pattern routing and lets any permitted principal write without bus rules; it is a different integration pattern, not an event bus.",
+    "section": "Integration services II: EventBridge and Step Functions",
+    "reference": {
+     "label": "Sending and receiving events between AWS accounts",
+     "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html"
+    }
+   }
+  ],
+  "migration-modernization:new-architecture": [
+   {
+    "id": "kc-newarch-1",
+    "type": "single",
+    "question": "A company moves a MySQL database to Amazon RDS with a Multi-AZ DB instance deployment. Read traffic from reporting users is now overloading the primary. What should a solutions architect conclude?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Route reporting queries to the standby instance, which is readable in a Multi-AZ DB instance deployment."
+     },
+     {
+      "key": "B",
+      "text": "The standby in a Multi-AZ DB instance deployment does not serve read traffic; add read replicas or move to a design with readable replicas."
+     },
+     {
+      "key": "C",
+      "text": "Disable Multi-AZ so the standby capacity is released to the primary."
+     },
+     {
+      "key": "D",
+      "text": "Multi-AZ replication is asynchronous, so reads on the standby would be stale and are blocked by a parameter."
+     }
+    ],
+    "answer": "B",
+    "explanation": "In a Multi-AZ DB instance deployment the single standby exists for failover and does not serve read traffic, so adding read replicas (or using a Multi-AZ DB cluster, whose standbys can serve reads, or Aurora readers) is how reads scale. Option A is wrong because that standby is not readable. Option C is wrong because disabling Multi-AZ removes availability and does not add capacity to the primary. Option D is wrong because the replication is synchronous, not asynchronous, and the reason reads are not possible is the deployment design, not a parameter.",
+    "section": "Relational and in-memory databases: RDS, Aurora and ElastiCache",
+    "reference": {
+     "label": "Multi-AZ deployments for Amazon RDS",
+     "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+    }
+   },
+   {
+    "id": "kc-newarch-2",
+    "type": "multi",
+    "question": "A team is building a production Amazon OpenSearch Service domain across two Availability Zones. Which TWO statements about dedicated master nodes are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Three dedicated master nodes provide a quorum of two, so the cluster can elect a new master after one master fails."
+     },
+     {
+      "key": "B",
+      "text": "Two dedicated master nodes are sufficient because a quorum of one remains after a failure."
+     },
+     {
+      "key": "C",
+      "text": "A single dedicated master node is the cheapest supported production configuration."
+     },
+     {
+      "key": "D",
+      "text": "OpenSearch Service distributes the dedicated master nodes across three Availability Zones even when the domain uses two zones."
+     },
+     {
+      "key": "E",
+      "text": "Four dedicated master nodes are recommended because an even number avoids split votes."
+     }
+    ],
+    "answer": "AD",
+    "explanation": "Three dedicated masters give the quorum of two needed to elect a new master after one failure, and the service spreads dedicated masters over three AZs even for a two-AZ domain so a zone loss keeps quorum. B is wrong because with two masters the quorum is two, so one failure leaves no quorum. C is wrong because a single dedicated master is explicitly prohibited and returns a validation exception. E is wrong because an even number of masters is never recommended and four is no better than three and can cause problems across AZs.",
+    "section": "NoSQL, document, search and analytics targets: DynamoDB, DocumentDB, OpenSearch and Athena",
+    "reference": {
+     "label": "Dedicated master nodes in Amazon OpenSearch Service",
+     "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-dedicatedmasternodes.html"
+    }
+   },
+   {
+    "id": "kc-newarch-3",
+    "type": "single",
+    "question": "Customers upload large raw video files to an Amazon S3 bucket a few times a day. Each file needs about 40 minutes of processing with a containerised tool. The company wants no servers to manage and no polling. Which design fits best?",
+    "options": [
+     {
+      "key": "A",
+      "text": "An S3 event notification invokes a Lambda function configured with a 40-minute timeout."
+     },
+     {
+      "key": "B",
+      "text": "A cron job on a large Amazon EC2 instance lists the bucket every minute and starts the tool."
+     },
+     {
+      "key": "C",
+      "text": "S3 sends events to Amazon EventBridge, and a rule launches an Amazon ECS task on AWS Fargate to process the file."
+     },
+     {
+      "key": "D",
+      "text": "An Application Load Balancer forwards each upload to an Amazon EKS cluster that the team patches monthly."
+     }
+    ],
+    "answer": "C",
+    "explanation": "S3 can send events to EventBridge, whose rules can fan out to targets such as an ECS task, and Fargate runs the container without servers or node management for as long as the job needs. A fails because a standard Lambda function's timeout maximum is 900 seconds (15 minutes); the 90-minute ceiling applies only to Lambda Managed Instances with asynchronous or event-source-mapping invocations. B fails because it polls and leaves a server to manage. D fails because uploads to S3 do not go through an ALB and an EKS cluster adds node and version management that the stem does not justify.",
+    "section": "Container hosting: ECS, EKS, Fargate, ECR and hybrid options",
+    "reference": {
+     "label": "Lambda function timeout",
+     "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html"
+    }
+   },
+   {
+    "id": "kc-newarch-4",
+    "type": "single",
+    "question": "A media site uses Amazon CloudFront. It needs logic that reads the request body, calls a third-party API with the AWS SDK, and runs for several milliseconds on an origin request. Which edge option should be used?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A CloudFront Function on the viewer request event, because it scales to millions of requests per second."
+     },
+     {
+      "key": "B",
+      "text": "A CloudFront Function on the origin request event."
+     },
+     {
+      "key": "C",
+      "text": "A CloudFront Function with the CloudFront KeyValueStore."
+     },
+     {
+      "key": "D",
+      "text": "A Lambda@Edge function on the origin request event."
+     }
+    ],
+    "answer": "D",
+    "explanation": "Lambda@Edge supports origin request events, third-party libraries and the AWS SDK, network access, and access to the request body, and suits functions that take several milliseconds or more. A is wrong because CloudFront Functions are submillisecond, lightweight JavaScript functions without body access or network calls. B is wrong because CloudFront Functions only support viewer request and viewer response events. C is wrong because KeyValueStore only supplies key-value lookups to CloudFront Functions and does not remove their restrictions.",
+    "section": "Edge delivery, load balancing and the stateless web tier",
+    "reference": {
+     "label": "Differences between CloudFront Functions and Lambda@Edge",
+     "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html"
+    }
+   },
+   {
+    "id": "kc-newarch-5",
+    "type": "single",
+    "question": "A company has migrated an application into a VPC and now reads from Amazon DynamoDB through a NAT gateway, which is costly. The same tables must also be reached privately from the on-premises data center over AWS Direct Connect. What is the correct design?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Use a gateway VPC endpoint for the in-VPC application at no additional charge, and an interface endpoint for the on-premises access, because gateway endpoints do not allow on-premises access."
+     },
+     {
+      "key": "B",
+      "text": "Use only a gateway VPC endpoint, which serves both the VPC and the on-premises network over Direct Connect."
+     },
+     {
+      "key": "C",
+      "text": "Use only a NAT gateway, since DynamoDB has no private connectivity option."
+     },
+     {
+      "key": "D",
+      "text": "Use a gateway VPC endpoint in the data center's router so on-premises clients resolve DynamoDB privately."
+     },
+     {
+      "key": "E",
+      "text": "Use a transit gateway attachment to a gateway endpoint to reach DynamoDB from on premises."
+     }
+    ],
+    "answer": "A",
+    "explanation": "Gateway endpoints for DynamoDB are free and remove the need for an internet gateway or NAT device for traffic from the VPC, but they do not allow access from on-premises networks, from peered VPCs in other Regions, or through a transit gateway; an interface endpoint, available at additional cost, covers those cases. B is wrong because gateway endpoints cannot be used from on premises. C is wrong because DynamoDB supports both gateway and interface endpoints. D is wrong because a gateway endpoint is a route-table target in a VPC, not a device you install in a data center. E is wrong because access through a transit gateway is specifically not supported by gateway endpoints.",
+    "section": "NoSQL, document, search and analytics targets: DynamoDB, DocumentDB, OpenSearch and Athena",
+    "reference": {
+     "label": "Gateway endpoints for Amazon DynamoDB",
+     "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html"
+    }
+   }
+  ],
+  "migration-modernization:select-workloads": [
+   {
+    "id": "kc-select-1",
+    "type": "single",
+    "question": "A company is preparing to migrate 1,000 servers: 300 are physical Linux hosts and 700 are VMware VMs. The architect must produce an inventory that includes running processes on every server and TCP connections between them, to define application groups. Which approach meets the requirement?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Deploy the Agentless Collector in vCenter; it discovers physical servers attached to the same network and lists their processes."
+     },
+     {
+      "key": "B",
+      "text": "Import an RVTools export for all servers into Migration Hub and read process data from the imported records."
+     },
+     {
+      "key": "C",
+      "text": "Install the AWS Application Discovery Agent on all 1,000 servers and start data collection."
+     },
+     {
+      "key": "D",
+      "text": "Run the Migration Evaluator business case and read the process list from the output."
+     }
+    ],
+    "answer": "C",
+    "explanation": "Only the Discovery Agent inventories running processes, and it is the only listed method that covers physical servers (agent deployment is per server and supports Linux and Windows hosts, physical or virtual). A fails because the Agentless Collector supports VMware vCenter VMs only, does not list physical servers, and cannot see inside a VM to list processes. B fails because RVTools exports are a single snapshot with no process or connection data. D fails because Migration Evaluator builds a cost business case and does not do dependency or process mapping.",
+    "section": "Application Discovery Service: collection methods",
+    "reference": {
+     "label": "What is AWS Application Discovery Service?",
+     "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html"
+    }
+   },
+   {
+    "id": "kc-select-2",
+    "type": "multi",
+    "question": "A team will use the Migration Hub network diagram to define application groups for a data centre. Which TWO statements about preparing for it are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The diagram can show an unlimited number of server nodes as long as the account has Business Support."
+     },
+     {
+      "key": "B",
+      "text": "The Discovery Agent must be running on all on-premises servers that should appear in the diagram."
+     },
+     {
+      "key": "C",
+      "text": "Inbound TCP 443 must be opened on every server so AWS can pull connection data."
+     },
+     {
+      "key": "D",
+      "text": "AWS recommends collecting server and connection data for roughly two to six weeks to capture month-end or year-end patterns."
+     },
+     {
+      "key": "E",
+      "text": "Data ingestion continues indefinitely, so the collection window never needs managing."
+     }
+    ],
+    "answer": "BD",
+    "explanation": "The documented prerequisites are that the Discovery Agent runs on every server to be mapped, and that two to six weeks of data is recommended to catch periodic business cycles. A is wrong: the diagram is documented as visualising up to 1,500 server nodes and support plans do not change that. C is wrong: agents only need outbound TCP 443 to the regional arsenal endpoint and no inbound ports. E is wrong: data ingestion for the diagram stops after 180 days.",
+    "section": "Dependency mapping and data exploration",
+    "reference": {
+     "label": "Prerequisites for using the network diagram",
+     "url": "https://docs.aws.amazon.com/migrationhub/latest/ug/network-diagram-prerequisites.html"
+    }
+   },
+   {
+    "id": "kc-select-3",
+    "type": "single",
+    "question": "A manufacturer runs about 600 Windows and Linux servers on Hyper-V. Security policy forbids installing agents on production servers. The CIO wants a directional TCO business case, including bring-your-own-licence modelling for existing Windows Server and SQL Server licences, at no service charge. What should the architect use?",
+    "options": [
+     {
+      "key": "A",
+      "text": "AWS Migration Evaluator, using its read-only collector or uploaded inventory exports."
+     },
+     {
+      "key": "B",
+      "text": "The Application Discovery Service Agentless Collector deployed in vCenter."
+     },
+     {
+      "key": "C",
+      "text": "The Application Discovery Agent on each server, followed by Athena queries."
+     },
+     {
+      "key": "D",
+      "text": "AWS Pricing Calculator, entering each server by hand."
+     }
+    ],
+    "answer": "A",
+    "explanation": "Migration Evaluator is complimentary, builds a business case that can model BYOL, and works without agents either through its read-only collector (which supports Hyper-V via WMI) or through uploaded exports. B fails because the Agentless Collector is installed into VMware vCenter and the estate is Hyper-V. C violates the no-agent rule and produces dependency data rather than a TCO business case. D can price a target AWS design, but it does not discover the on-premises estate or model current-state cost and utilization, so it is slower and less accurate.",
+    "section": "Migration Evaluator and TCO business cases",
+    "reference": {
+     "label": "Migration Evaluator FAQs",
+     "url": "https://aws.amazon.com/migration-evaluator/faqs/"
+    }
+   },
+   {
+    "id": "kc-select-4",
+    "type": "single",
+    "question": "After a discovery period, a portfolio review finds an internal promotions site with 3% average CPU and memory utilization and no inbound connections for the last 120 days. Which migration strategy best fits this application?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Rehost with Application Migration Service to preserve the application."
+     },
+     {
+      "key": "B",
+      "text": "Refactor to serverless to reduce its footprint."
+     },
+     {
+      "key": "C",
+      "text": "Repurchase as a SaaS product."
+     },
+     {
+      "key": "D",
+      "text": "Retire it and shut down the servers."
+     }
+    ],
+    "answer": "D",
+    "explanation": "AWS migration guidance identifies retire for applications with no business value, including zombie applications (average CPU and memory under 5 percent) and applications with no inbound connections for 90 days; discovery utilization and connection data is the evidence. A and B spend migration effort on an unused workload, and refactoring is the most complex and costly strategy. C replaces an application that nobody uses, adding licence and onboarding cost for no benefit. Retire also removes hosting cost and security exposure.",
+    "section": "Prioritisation, the 7 Rs and wave planning",
+    "reference": {
+     "label": "About the migration strategies",
+     "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html"
+    }
+   },
+   {
+    "id": "kc-select-5",
+    "type": "single",
+    "question": "A consultant has Discovery Agents reporting from 200 servers and wants to run SQL against process-level connection data and server performance history. What must be turned on?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The Agentless Collector database and analytics module."
+     },
+     {
+      "key": "B",
+      "text": "Continuous Export (data exploration in Amazon Athena) for Application Discovery Service."
+     },
+     {
+      "key": "C",
+      "text": "A Migration Hub import task using the CSV template."
+     },
+     {
+      "key": "D",
+      "text": "The Migration Evaluator Quick Insights report."
+     }
+    ],
+    "answer": "B",
+    "explanation": "Data exploration in Athena is enabled by turning on Continuous Export, which streams Discovery Agent data through Amazon Data Firehose to S3 and Glue tables that Athena can query. A is wrong because that module inventories database and analytics servers and feeds DMS target recommendations. C is wrong because import loads a single snapshot into Migration Hub and carries no process or time-series connection data. D is wrong because Quick Insights is a cost summary, not a queryable dataset of connections.",
+    "section": "Dependency mapping and data exploration",
+    "reference": {
+     "label": "Turning on data exploration in Amazon Athena",
+     "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/ce-prep-agents.html"
+    }
+   }
+  ],
+  "new-solutions:business-continuity": [
+   {
+    "id": "kc-bc-1",
+    "type": "single",
+    "question": "A retailer needs its order system to survive a Regional outage. Management accepts an RTO of about 20 minutes and an RPO of a few seconds, but will not pay for a full second production fleet. The DR Region must be able to start handling requests right away at reduced capacity and then scale up. Which strategy fits best?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Backup and restore, with snapshots copied nightly to the DR Region"
+     },
+     {
+      "key": "B",
+      "text": "Pilot light, with the Auto Scaling group at zero and a database replica running"
+     },
+     {
+      "key": "C",
+      "text": "Warm standby, with a scaled-down but running copy of the stack and continuous data replication"
+     },
+     {
+      "key": "D",
+      "text": "Multi-site active/active with full-size stacks in both Regions"
+     }
+    ],
+    "answer": "C",
+    "explanation": "Warm standby keeps a scaled-down, fully functional copy of the workload running in the DR Region, so it can handle traffic at reduced capacity immediately and only needs to scale up; combined with continuous replication it meets a seconds-level RPO and a short RTO without paying for full capacity. Backup and restore (A) has a nightly recovery point, so the RPO is hours, and requires redeploying and restoring, so the RTO is much longer. Pilot light (B) keeps the servers switched off, so it cannot process requests until they are turned on and scaled, which conflicts with 'start handling requests right away'. Multi-site active/active (D) meets the targets but runs full-size stacks in both Regions, which the stem rules out on cost.",
+    "section": "RTO, RPO and the four DR strategies",
+    "reference": {
+     "label": "Disaster recovery options in the cloud",
+     "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+    }
+   },
+   {
+    "id": "kc-bc-2",
+    "type": "multi",
+    "question": "Which TWO statements about Route 53 failover are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A health check can be attached to a simple routing record so that unhealthy IP addresses are withheld from answers."
+     },
+     {
+      "key": "B",
+      "text": "If both the primary and secondary records of a failover pair are unhealthy, Route 53 returns the primary record."
+     },
+     {
+      "key": "C",
+      "text": "Health checks can only monitor public HTTP endpoints; they cannot depend on CloudWatch alarms."
+     },
+     {
+      "key": "D",
+      "text": "With a 60 second TTL, 10 second health check interval and a failure threshold of 3, DNS failover takes roughly 90 seconds."
+     },
+     {
+      "key": "E",
+      "text": "Route 53 health check APIs must be called to perform automatic failover, so automatic failover depends on the control plane."
+     }
+    ],
+    "answer": "BD",
+    "explanation": "B is correct: when both records are unhealthy Route 53 answers with the primary. D is correct: failover time is approximately TTL plus (interval x threshold), which is 60 + (10 x 3) = 90 seconds. A is wrong because a health check cannot be attached to a simple routing policy record; Route 53 returns all values regardless of status. C is wrong because a health check can monitor a CloudWatch alarm, other health checks or an ARC routing control as well as endpoints. E is wrong because automatic failover through health checks is performed on the Route 53 data plane; it is forced failover through the health check APIs that would add a control plane dependency.",
+    "section": "Traffic management and failover mechanisms",
+    "reference": {
+     "label": "Creating disaster recovery mechanisms using Amazon Route 53",
+     "url": "https://aws.amazon.com/blogs/networking-and-content-delivery/creating-disaster-recovery-mechanisms-using-amazon-route-53/"
+    }
+   },
+   {
+    "id": "kc-bc-3",
+    "type": "single",
+    "question": "A team runs an Aurora global database and wants to move the primary cluster to the secondary Region during a scheduled Regional rotation. Both Regions are healthy and no transactions may be lost. What should they do?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Perform a switchover of the global database to the secondary cluster."
+     },
+     {
+      "key": "B",
+      "text": "Run failover-global-cluster with --allow-data-loss against the secondary cluster."
+     },
+     {
+      "key": "C",
+      "text": "Remove the secondary cluster from the global database and promote it as a standalone cluster."
+     },
+     {
+      "key": "D",
+      "text": "Take a snapshot of the primary, copy it to the secondary Region and restore it as a new cluster."
+     }
+    ],
+    "answer": "A",
+    "explanation": "Switchover (formerly managed planned failover) is designed for healthy, planned operations such as Regional rotation or DR drills: it synchronizes the secondary clusters with the primary before changing roles, so RPO is 0, and the replication direction is flipped. Failover with --allow-data-loss (B) is the unplanned-outage path and can lose transactions not yet replicated. Removing and promoting a secondary (C) permanently stops replication into that cluster and it cannot be reattached to the existing global database. A snapshot copy and restore (D) is slower, has a recovery point at the snapshot time and loses writes made afterwards.",
+    "section": "Database and data replication across Regions",
+    "reference": {
+     "label": "Using switchover or failover in Amazon Aurora Global Database",
+     "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+    }
+   },
+   {
+    "id": "kc-bc-4",
+    "type": "single",
+    "question": "A company must keep backups of EC2, RDS and EFS resources so that a compromised production account (including an administrator) cannot delete or shorten retention of them, and a copy must exist in a second Region. Which design meets this with the least custom code?",
+    "options": [
+     {
+      "key": "A",
+      "text": "DLM policies in each production account that copy snapshots to a second Region, with IAM deny statements on snapshot deletion"
+     },
+     {
+      "key": "B",
+      "text": "AWS Backup plans copying to a vault in the same account, protected by Vault Lock in governance mode"
+     },
+     {
+      "key": "C",
+      "text": "S3 cross-Region replication of exported backups to a bucket in the same account with versioning"
+     },
+     {
+      "key": "D",
+      "text": "AWS Backup plans with a copy action to a vault in a separate backup account in another Region, with Vault Lock in compliance mode on the destination vault"
+     }
+    ],
+    "answer": "D",
+    "explanation": "Cross-account, cross-Region copy into a vault in a dedicated account removes the production account's control over the copies, and compliance-mode Vault Lock becomes immutable after the grace period, so no user, account owner or AWS can delete the backups early or change the lock. A (DLM) covers EBS snapshots only, not RDS or EFS, and the deny statements live in the same account that an attacker controls. B uses governance mode, which users with sufficient IAM permissions can manage or remove, and the same-account vault is exposed to the compromised account. C relies on custom exports and same-account storage, which an administrator of that account can still modify, and it is not a managed point-in-time backup.",
+    "section": "Backup architecture: AWS Backup, DLM and data protection",
+    "reference": {
+     "label": "AWS Backup Vault Lock",
+     "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+    }
+   },
+   {
+    "id": "kc-bc-5",
+    "type": "multi",
+    "question": "A global application uses a DynamoDB global table in the default multi-Region eventual consistency mode, and a second table in multi-Region strong consistency mode. Which TWO statements are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "In the default mode, concurrent writes to the same item in different Regions are reconciled with last writer wins at the item level."
+     },
+     {
+      "key": "B",
+      "text": "In the default mode, a strongly consistent read in one Region always returns the latest write made in any other Region."
+     },
+     {
+      "key": "C",
+      "text": "In the default mode, a transaction that updates two items is replicated atomically so readers in other Regions never see a partial result."
+     },
+     {
+      "key": "D",
+      "text": "Global tables require you to promote a replica to primary before it can accept writes after a Regional failure."
+     },
+     {
+      "key": "E",
+      "text": "In strong consistency mode, an acknowledged write is immediately available for reads from any other replica, and a conflicting concurrent write fails with a retryable error."
+     }
+    ],
+    "answer": "AE",
+    "explanation": "A is correct: MREC resolves conflicting writes with last writer wins on a per-item basis. E is correct: MRSC replicates synchronously to at least one other Region before acknowledging, makes the write visible to reads from any replica, and a write that conflicts with an in-flight write to the same item fails with a retryable exception. B is wrong because strongly consistent reads in MREC return the latest version only for items last updated in that Region and can be stale for writes from other Regions. C is wrong because transactions are not supported across Regions: readers in another Region can see some items of a transaction before others. D is wrong because global tables are multi-active: every replica accepts writes, so failover is a traffic redirection rather than a promotion.",
+    "section": "Database and data replication across Regions",
+    "reference": {
+     "label": "How DynamoDB global tables work",
+     "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html"
+    }
+   }
+  ],
+  "new-solutions:cost-strategy": [
+   {
+    "id": "kc-cost-1",
+    "type": "single",
+    "question": "A company will run 60 EC2 instances 24x7 for three years behind an Auto Scaling group. Engineering plans to move part of the fleet from m5 to Graviton-based families in year two and to shift some services to AWS Fargate in year three. Finance wants the largest discount that does not penalise these changes. Which purchase is best?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Three-year Standard Reserved Instances for the m5 instances"
+     },
+     {
+      "key": "B",
+      "text": "Three-year Compute Savings Plan sized to the steady hourly baseline"
+     },
+     {
+      "key": "C",
+      "text": "Three-year EC2 Instance Savings Plan for the m5 family"
+     },
+     {
+      "key": "D",
+      "text": "Spot Instances for the entire fleet with a Capacity Reservation as a fallback"
+     }
+    ],
+    "answer": "B",
+    "explanation": "Compute Savings Plans apply regardless of instance family, size, OS, tenancy or Region and also cover Fargate and Lambda, so the discount follows the planned move to Graviton and Fargate. A is wrong because Standard RIs are tied to a configuration and cannot be exchanged (only Convertible RIs can), so changing families strands the reservation. C is wrong because an EC2 Instance Savings Plan is committed to one instance family in a Region and does not cover Fargate, so the planned move would lose the discount. D is wrong because Spot can be interrupted and Capacity Reservations carry no discount by themselves, so it neither suits a 24x7 baseline nor is the largest committed saving.",
+    "section": "Commitments: Savings Plans, Reserved Instances, Capacity Reservations, Dedicated Hosts",
+    "reference": {
+     "label": "Savings Plans types",
+     "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+    }
+   },
+   {
+    "id": "kc-cost-2",
+    "type": "multi",
+    "question": "A team stores 400 GB objects of log archives in S3 and designs lifecycle and storage-class settings. Which TWO statements are accurate?",
+    "options": [
+     {
+      "key": "A",
+      "text": "S3 Intelligent-Tiering has no retrieval charges and no minimum storage duration, but charges a small per-object monitoring and automation fee."
+     },
+     {
+      "key": "B",
+      "text": "A lifecycle rule can move objects from S3 Standard-IA back to S3 Standard after 60 days."
+     },
+     {
+      "key": "C",
+      "text": "Deleting an object from S3 Glacier Deep Archive after 40 days still incurs storage charges for the remainder of a 180-day minimum."
+     },
+     {
+      "key": "D",
+      "text": "Objects transitioned to S3 Glacier Flexible Retrieval are available in milliseconds without a restore."
+     },
+     {
+      "key": "E",
+      "text": "S3 Standard-IA has no retrieval fee, so it is always cheaper than S3 Standard for any access pattern."
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A is correct: Intelligent-Tiering has a monitoring and automation charge but no retrieval fees and no minimum storage duration. C is correct: Deep Archive carries a 180-day minimum, so early deletion bills the remaining days pro rata. B is wrong because lifecycle transitions only move down the storage-class waterfall, never back up. D is wrong because Flexible Retrieval retrieval takes minutes to hours, not milliseconds; Instant Retrieval is the millisecond class. E is wrong because Standard-IA does charge a retrieval fee, has a 30-day minimum and a 128 KB billing minimum, so frequently accessed data costs more there.",
+    "section": "Storage tiering",
+    "reference": {
+     "label": "How S3 Intelligent-Tiering works",
+     "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+    }
+   },
+   {
+    "id": "kc-cost-3",
+    "type": "single",
+    "question": "Application servers in private subnets read about 40 TB per month from an S3 bucket in the same Region through a NAT gateway, and the NAT data processing charge is the largest line on the bill. What is the most cost-effective change that preserves private access?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Replace the NAT gateway with a larger NAT instance"
+     },
+     {
+      "key": "B",
+      "text": "Move the servers to a public subnet and assign public IPs"
+     },
+     {
+      "key": "C",
+      "text": "Create an S3 interface endpoint and keep routing through the NAT gateway"
+     },
+     {
+      "key": "D",
+      "text": "Create an S3 gateway VPC endpoint and add it to the private route tables"
+     }
+    ],
+    "answer": "D",
+    "explanation": "A gateway endpoint for S3 has no hourly or data-processing charge, and routing the S3 traffic through it takes that traffic off the NAT gateway entirely. A does not remove the per-GB processing charge and adds instance management. B removes private access, breaking the stated requirement, and public subnets still need an internet path. C is wrong because an interface endpoint adds an hourly and per-GB charge and is intended for cases a gateway endpoint cannot serve, such as on-premises access; also, keeping traffic routed through the NAT would not avoid the NAT charge.",
+    "section": "Data transfer costs and modeling",
+    "reference": {
+     "label": "Pricing for NAT gateways",
+     "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+    }
+   },
+   {
+    "id": "kc-cost-4",
+    "type": "single",
+    "question": "A vendor licence is bound to a physical server and cannot move to another host for 60 days. Instances must be stopped and restarted weekly for patching, and the project ends after 60 days. Which approach meets the requirement at the lowest cost?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Allocate a Dedicated Host On-Demand and launch the instances with host affinity set to Host, releasing the host after 60 days"
+     },
+     {
+      "key": "B",
+      "text": "Run the instances as Dedicated Instances so they remain on single-tenant hardware"
+     },
+     {
+      "key": "C",
+      "text": "Purchase a three-year Dedicated Host Reservation and launch with default affinity"
+     },
+     {
+      "key": "D",
+      "text": "Use Spot Instances with a persistent request so they return to the same host"
+     }
+    ],
+    "answer": "A",
+    "explanation": "Host affinity set to Host makes a stopped instance restart on the same Dedicated Host, and an On-Demand host billed per hour avoids a long reservation for a 60-day need. B is wrong because Dedicated Instances isolate hardware but give no visibility or control of placement, so the same-host requirement cannot be shown. C is wrong because a three-year reservation far exceeds the 60-day need and default affinity restarts on any available host with only best-effort return to the last host. D is wrong because Spot capacity can be reclaimed and replacement can land on different hardware; Spot has no host placement control.",
+    "section": "Commitments: Savings Plans, Reserved Instances, Capacity Reservations, Dedicated Hosts",
+    "reference": {
+     "label": "Dedicated Host auto-placement and host affinity",
+     "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-understanding.html"
+    }
+   },
+   {
+    "id": "kc-cost-5",
+    "type": "multi",
+    "question": "A central FinOps team must prevent development accounts from launching new EC2 instances once forecasted monthly spend for the development OU exceeds its budget, without deploying any new infrastructure in those accounts. Which TWO actions form the best solution?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create an AWS Budgets budget on forecasted cost for the development OU's accounts"
+     },
+     {
+      "key": "B",
+      "text": "Create a CloudWatch alarm on the account's billing metric that sends an email"
+     },
+     {
+      "key": "C",
+      "text": "Configure a budget action that applies a deny service control policy to the development OU"
+     },
+     {
+      "key": "D",
+      "text": "Configure Cost Anomaly Detection and rely on its alert to stop the instances"
+     },
+     {
+      "key": "E",
+      "text": "Configure a budget action that stops specific instances in each member account from the management account"
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A is correct: Budgets can alert on forecasted cost, and C is correct: a budget action can apply an SCP, which the management account can attach to another account or OU without provisioning resources there. B is wrong because an email alarm informs but does not enforce a block. D is wrong because Cost Anomaly Detection finds unusual spend and notifies; it has no enforcement action and no budget threshold semantics. E is wrong because from the management account you cannot target EC2 or RDS instances in another account with a budget action, and stopping instances does not prevent new launches (nor survives Auto Scaling replacement).",
+    "section": "Cost visibility and expenditure controls",
+    "reference": {
+     "label": "Configuring budget actions",
+     "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"
+    }
+   }
+  ],
+  "new-solutions:deployment-strategy": [
+   {
+    "id": "kc-deploy-1",
+    "type": "single",
+    "question": "A production CloudFormation stack contains an Amazon RDS DB instance and an Amazon EBS volume. A later template edit changes a property that forces CloudFormation to replace the volume, and the stack may also be deleted by mistake in future. The team wants a snapshot kept in both cases instead of losing the data. What should they configure?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Enable termination protection on the stack only."
+     },
+     {
+      "key": "B",
+      "text": "Set DeletionPolicy: Snapshot on both resources and nothing else."
+     },
+     {
+      "key": "C",
+      "text": "Set DeletionPolicy: Snapshot and UpdateReplacePolicy: Snapshot on both resources."
+     },
+     {
+      "key": "D",
+      "text": "Attach a CloudFormation service role with read-only permissions to the stack."
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: DeletionPolicy covers stack deletion or removal of a resource from the template, but the documentation states it does not apply when a resource's physical instance is replaced during an update; UpdateReplacePolicy covers that case, and Snapshot is supported for resources that can be snapshotted. A fails because termination protection only blocks DeleteStack and does nothing for replacement during an update. B fails because it leaves the replacement case on the default behaviour, which deletes the old resource. D fails because a service role changes which identity CloudFormation uses, not what happens to the data.",
+    "section": "CloudFormation: safe change and rollback",
+    "reference": {
+     "label": "UpdateReplacePolicy attribute",
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatereplacepolicy.md"
+    }
+   },
+   {
+    "id": "kc-deploy-2",
+    "type": "multi",
+    "question": "A team converts a Lambda function to AWS SAM and wants gradual traffic shifting with automatic rollback. Which TWO statements are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "DeploymentPreference requires AutoPublishAlias to be set on the function."
+     },
+     {
+      "key": "B",
+      "text": "Callers should keep invoking the unqualified function ARN so traffic shifting applies."
+     },
+     {
+      "key": "C",
+      "text": "The CodeDeploy application must be created manually before sam deploy."
+     },
+     {
+      "key": "D",
+      "text": "CloudWatch alarms listed in the DeploymentPreference can cause an automatic rollback during the shift."
+     },
+     {
+      "key": "E",
+      "text": "LambdaAllAtOnce is the recommended configuration for risk reduction."
+     }
+    ],
+    "answer": "AD",
+    "explanation": "A is correct because the SAM documentation states that using a DeploymentPreference without an AutoPublishAlias results in an error. D is correct because SAM wires the listed alarms into CodeDeploy, which rolls back if they trigger. B is wrong: invocations must use the alias qualifier to benefit from shifting, because the alias is what moves between versions. C is wrong: SAM creates the CodeDeploy resources automatically when gradual deployments are enabled. E is wrong: Trusted Advisor flags all-at-once and recommends canary or linear to reduce deployment risk.",
+    "section": "Serverless releases: Lambda aliases, SAM and CodeDeploy",
+    "reference": {
+     "label": "Deploying serverless applications gradually with AWS SAM",
+     "url": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/automating-updates-to-serverless-apps.html"
+    }
+   },
+   {
+    "id": "kc-deploy-3",
+    "type": "single",
+    "question": "An application on a load-balanced Elastic Beanstalk environment with an Application Load Balancer and enhanced health reporting must be released to a small share of real traffic before full rollout, without creating a second environment. Which deployment policy fits?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Rolling with additional batch"
+     },
+     {
+      "key": "B",
+      "text": "Traffic splitting"
+     },
+     {
+      "key": "C",
+      "text": "Swap environment URLs between two environments"
+     },
+     {
+      "key": "D",
+      "text": "All at once"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: traffic splitting performs an immutable deployment and temporarily splits incoming traffic between old and new versions for canary testing, and it requires enhanced health reporting and an Application Load Balancer, which this environment has. A keeps full capacity but updates instances in batches with no traffic percentage control. C is blue/green and needs a second environment, which the stem rules out, and it moves all traffic at once at the DNS level. D deploys to every instance simultaneously, briefly takes them out of service and gives no canary.",
+    "section": "Elastic Beanstalk and CloudFront release options",
+    "reference": {
+     "label": "Deployment policies and settings",
+     "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html"
+    }
+   },
+   {
+    "id": "kc-deploy-4",
+    "type": "single",
+    "question": "An EC2 Auto Scaling group scales frequently. Each new instance must run the latest approved application revision before receiving traffic. Which design achieves this with CodeDeploy?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Register each new instance as an on-premises instance so it joins the deployment group."
+     },
+     {
+      "key": "B",
+      "text": "Use blue/green deployments targeting on-premises instances."
+     },
+     {
+      "key": "C",
+      "text": "Remove the CodeDeploy agent from the AMI because CodeDeploy deploys agentlessly to EC2."
+     },
+     {
+      "key": "D",
+      "text": "Add the Auto Scaling group to the deployment group and include the CodeDeploy agent and instance profile in the launch configuration or AMI."
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: when an Auto Scaling group is part of the deployment group, CodeDeploy installs a launch lifecycle hook, keeps the new instance in Pending:Wait while it deploys the latest revision, then signals CONTINUE or ABANDON, and the agent and IAM instance profile must be on each EC2 instance. A fails because on-premises instances cannot participate in Auto Scaling scenarios. B fails because blue/green requires Amazon EC2 instances and does not support on-premises instances. C fails because the CodeDeploy agent must be installed and running on each instance.",
+    "section": "CodeDeploy for EC2, Auto Scaling and ECS",
+    "reference": {
+     "label": "Integrating CodeDeploy with Amazon EC2 Auto Scaling",
+     "url": "https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-auto-scaling.html"
+    }
+   },
+   {
+    "id": "kc-deploy-5",
+    "type": "single",
+    "question": "A central platform team must deploy a logging stack into every current and future account of two AWS Organizations OUs across three Regions, with the ability to stop the rollout if too many accounts fail. Which is the best fit?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A service-managed StackSet targeting the OUs with automatic deployment enabled and a failure tolerance set"
+     },
+     {
+      "key": "B",
+      "text": "A self-managed StackSet with IAM roles created by hand in each new account"
+     },
+     {
+      "key": "C",
+      "text": "A nested stack in each account deployed by a separate pipeline per account"
+     },
+     {
+      "key": "D",
+      "text": "A CloudFormation resource import run from each account"
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct: service-managed StackSets use AWS Organizations trusted access so CloudFormation manages the roles, automatic deployment adds the stack to accounts that join the target OUs later, and the failure tolerance setting stops the operation in a Region once the limit is reached. B needs hand-built roles in each account and is the permission model without Organizations integration, so new accounts need manual work. C multiplies pipelines per account, which is the overhead StackSets removes. D imports existing resources and does not create or distribute stacks.",
+    "section": "Organizing IaC: nested stacks, StackSets, Service Catalog and CDK",
+    "reference": {
+     "label": "Enable or disable automatic deployments for StackSets",
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.md"
+    }
+   }
+  ],
+  "new-solutions:performance": [
+   {
+    "id": "kc-perf-1",
+    "type": "single",
+    "question": "A media company runs a render farm of several hundred Linux instances across three Availability Zones that read and write a shared POSIX file system. Throughput is idle for hours and then spikes unpredictably to many GiB/s. The team wants no capacity planning and the lowest per-operation latency. Which configuration meets this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "EFS Max I/O performance mode with Bursting throughput"
+     },
+     {
+      "key": "B",
+      "text": "EFS General Purpose performance mode with Provisioned throughput sized to the peak"
+     },
+     {
+      "key": "C",
+      "text": "EFS General Purpose performance mode with Elastic throughput"
+     },
+     {
+      "key": "D",
+      "text": "A single io2 Block Express volume shared with Multi-Attach"
+     }
+    ],
+    "answer": "C",
+    "explanation": "EFS General Purpose has the lowest per-operation latency, and Elastic throughput scales up and down automatically for spiky or unpredictable workloads without planning, which is exactly the stated need. Option A fails because Max I/O has higher latency, is a previous-generation mode, and Bursting ties throughput to stored size and burst credits that spiky peaks can exhaust. Option B would work technically but you would pay for provisioned throughput sized to the peak all the time and must forecast it, contradicting 'no capacity planning'. Option D fails because Multi-Attach volumes exist in one AZ only, limit attachment to 16 Nitro instances, and standard file systems are not safe for concurrent access.",
+    "section": "Shared file storage: EFS, FSx for Lustre and S3 access",
+    "reference": {
+     "label": "EFS performance specifications",
+     "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+    }
+   },
+   {
+    "id": "kc-perf-2",
+    "type": "multi",
+    "question": "A Lambda-based order processor writes to an RDS database. During promotions, thousands of concurrent invocations exhaust database connections and CPU. Which TWO changes best address the problem with minimal re-architecture?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Place an Amazon SQS queue in front of the function and set maximum concurrency on the event source mapping"
+     },
+     {
+      "key": "B",
+      "text": "Move the database to a larger instance class only"
+     },
+     {
+      "key": "C",
+      "text": "Add Amazon CloudFront in front of the database"
+     },
+     {
+      "key": "D",
+      "text": "Connect the function to the database through RDS Proxy"
+     },
+     {
+      "key": "E",
+      "text": "Replace SQS with Amazon DynamoDB Accelerator"
+     }
+    ],
+    "answer": "AD",
+    "explanation": "The SQS queue converts the write burst into a controlled rate, and the event source mapping's maximum concurrency caps parallel invocations so the database is not flooded; RDS Proxy pools and multiplexes connections so many invocations share few database connections. Together they address both the burst and connection exhaustion. Option B scales the symptom, is costly at idle, and does not fix connection counts caused by fan-out. Option C is wrong because CloudFront fronts HTTP origins and cannot sit in front of a database. Option E is wrong because DAX is a cache for DynamoDB only and cannot buffer writes to RDS.",
+    "section": "Buffering and decoupling",
+    "reference": {
+     "label": "SQS maximum concurrency for Lambda",
+     "url": "https://aws.amazon.com/blogs/compute/introducing-maximum-concurrency-of-aws-lambda-functions-when-using-amazon-sqs-as-an-event-source/"
+    }
+   },
+   {
+    "id": "kc-perf-3",
+    "type": "single",
+    "question": "A genomics team runs a tightly coupled analysis once a week. Input data lives in Amazon S3, runs last six hours, and nothing needs to remain on the file system afterward except results stored in S3. They want the lowest cost for high-throughput parallel file access. What should they use?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Amazon EFS with Provisioned throughput"
+     },
+     {
+      "key": "B",
+      "text": "Amazon FSx for Lustre scratch file system linked to the S3 bucket with a data repository association"
+     },
+     {
+      "key": "C",
+      "text": "Amazon FSx for Lustre persistent file system kept running all week"
+     },
+     {
+      "key": "D",
+      "text": "A gp3 volume on each node with data copied from S3 at start-up"
+     }
+    ],
+    "answer": "B",
+    "explanation": "A scratch FSx for Lustre file system is designed for temporary, shorter-term processing at lower cost, and a data repository association lets S3 objects appear as files, lazy-loads content on first access, and exports results back to S3. Option A offers shared POSIX but at higher latency and with a continuous provisioned-throughput charge, and it is not a parallel HPC file system. Option C works but pays for replicated persistent capacity all week when data is disposable. Option D duplicates the dataset on every node, forces long copy times, and offers no shared namespace for a tightly coupled job.",
+    "section": "Shared file storage: EFS, FSx for Lustre and S3 access",
+    "reference": {
+     "label": "FSx for Lustre data repository associations",
+     "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html"
+    }
+   },
+   {
+    "id": "kc-perf-4",
+    "type": "single",
+    "question": "A website serves static pages from two S3 buckets, one per Region. The company wants CloudFront to send users in a country to the bucket in the nearest Region and to run this logic only when the object is not already cached, to keep cost low. Where should the logic run?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A Lambda@Edge function on the viewer request event"
+     },
+     {
+      "key": "B",
+      "text": "A CloudFront Function on the viewer response event"
+     },
+     {
+      "key": "C",
+      "text": "A Lambda@Edge function on the viewer response event"
+     },
+     {
+      "key": "D",
+      "text": "A Lambda@Edge function on the origin request event"
+     }
+    ],
+    "answer": "D",
+    "explanation": "The origin request event runs only on a cache miss, before CloudFront contacts the origin, and it is the trigger that lets you change the origin dynamically, so cost is low for highly cacheable content. Option A runs on every request before the cache check, which adds cost and does not match 'only when not cached'. Option B and C act on the response sent to the viewer, after the origin has already been chosen, so they cannot select an origin.",
+    "section": "Caching and edge acceleration",
+    "reference": {
+     "label": "Lambda@Edge design best practices",
+     "url": "https://aws.amazon.com/blogs/networking-and-content-delivery/lambdaedge-design-best-practices/"
+    }
+   },
+   {
+    "id": "kc-perf-5",
+    "type": "single",
+    "question": "A database runs on a 1,500 GiB gp2 volume and is limited at its baseline IOPS. The workload needs about 5,000 sustained IOPS and the team wants the lowest cost without changing the instance. What is the best action?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Modify the volume to gp3 and provision about 5,000 IOPS"
+     },
+     {
+      "key": "B",
+      "text": "Grow the volume to 3,000 GiB to reach 9,000 IOPS"
+     },
+     {
+      "key": "C",
+      "text": "Change to st1 to get 500 MiB/s"
+     },
+     {
+      "key": "D",
+      "text": "Switch to io2 Block Express with 256,000 IOPS"
+     }
+    ],
+    "answer": "A",
+    "explanation": "gp2 baseline is 3 IOPS per GiB, so 1,500 GiB gives 4,500 IOPS; gp3 includes 3,000 IOPS and lets you set IOPS and throughput independently of size, so provisioning about 5,000 IOPS on the same size is the cheapest way to meet the target. Option B pays for 1,500 GiB of unneeded capacity just to buy IOPS, which is the gp2 limitation gp3 removes. Option C is wrong because st1 is a throughput-oriented HDD volume with a maximum of 500 IOPS per volume. Option D greatly exceeds the requirement at much higher cost; io2 is justified for sustained sub-millisecond latency or more than 80,000 IOPS.",
+    "section": "Block and object storage performance",
+    "reference": {
+     "label": "Migrate gp2 to gp3",
+     "url": "https://aws.amazon.com/blogs/storage/migrate-your-amazon-ebs-volumes-from-gp2-to-gp3-and-save-up-to-20-on-costs/"
+    }
+   }
+  ],
+  "new-solutions:reliability": [
+   {
+    "id": "kc-reliability-1",
+    "type": "single",
+    "question": "A company serves an application from ALBs in us-east-1 and eu-west-1. Route 53 has one latency alias record per ALB, both with Evaluate Target Health set to Yes. Every target behind the us-east-1 ALB starts failing its target group health checks. A user whose nearest Region is us-east-1 queries the name. What does Route 53 return?",
+    "options": [
+     {
+      "key": "A",
+      "text": "No answer, because the lowest-latency record is unhealthy and latency routing never considers other records."
+     },
+     {
+      "key": "B",
+      "text": "The us-east-1 alias, because latency records ignore the health of the load balancer's targets."
+     },
+     {
+      "key": "C",
+      "text": "The eu-west-1 alias, because the unhealthy record is excluded and the lowest-latency healthy record is returned."
+     },
+     {
+      "key": "D",
+      "text": "Both aliases, so the client chooses whichever answers first."
+     }
+    ],
+    "answer": "C",
+    "explanation": "With Evaluate Target Health set to Yes, an alias to an ALB inherits health from the ALB's target groups; if they fail their thresholds the alias record is treated as unhealthy and Route 53 returns the least-latent healthy record from the set, here eu-west-1. A is wrong: latency policy does consider health and falls to other healthy records; 'no answer' is the geolocation behaviour when no default record exists. B is wrong because that would only be true if Evaluate Target Health were No, in which case Route 53 keeps routing to the failing branch. D is wrong because latency routing returns a single record per query; returning several healthy values is multivalue answer routing.",
+    "section": "Route 53 routing policies and health checks",
+    "reference": {
+     "label": "Why is my alias record marked unhealthy with Evaluate Target Health?",
+     "url": "https://repost.aws/knowledge-center/load-balancer-marked-unhealthy"
+    }
+   },
+   {
+    "id": "kc-reliability-2",
+    "type": "multi",
+    "question": "Which TWO statements about Amazon SQS FIFO queues are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A FIFO queue can use a standard queue as its dead-letter queue."
+     },
+     {
+      "key": "B",
+      "text": "Messages in the same message group are processed one at a time in order, so using many distinct message group IDs allows parallel consumers."
+     },
+     {
+      "key": "C",
+      "text": "The deduplication ID is forgotten as soon as the message has been received and deleted."
+     },
+     {
+      "key": "D",
+      "text": "If a message is sent twice with the same deduplication ID within the 5-minute interval, both sends are acknowledged but only one message is delivered."
+     },
+     {
+      "key": "E",
+      "text": "FIFO queues have the same nearly unlimited throughput as standard queues by default."
+     }
+    ],
+    "answer": "BD",
+    "explanation": "B is correct: ordering is guaranteed per message group, and groups are the unit of parallelism, so one constant group ID serialises all processing. D is correct: within the 5-minute deduplication window SQS acknowledges the duplicate send but does not deliver it. A is wrong because a FIFO queue's DLQ must also be FIFO (and a standard queue's DLQ must be standard). C is wrong because SQS keeps tracking the deduplication ID even after the message is received and deleted, for the window. E is wrong because default FIFO throughput is 300 messages per second without batching or 3,000 with batching; only high throughput mode raises it, whereas standard queues have nearly unlimited throughput.",
+    "section": "Decoupling with SQS and SNS",
+    "reference": {
+     "label": "Using the message deduplication ID in Amazon SQS",
+     "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagededuplicationid-property.html"
+    }
+   },
+   {
+    "id": "kc-reliability-3",
+    "type": "single",
+    "question": "A payments service stores balances in DynamoDB and runs in three Regions. After a Regional failure the application must read the most recent committed balance from any surviving Region with no data loss, and the team accepts higher write latency and no use of transaction APIs. Which design meets this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A global table using multi-Region strong consistency (MRSC) configured across exactly three Regions (replicas, or two replicas plus a witness)."
+     },
+     {
+      "key": "B",
+      "text": "A global table using the default multi-Region eventual consistency (MREC) with point-in-time recovery enabled."
+     },
+     {
+      "key": "C",
+      "text": "A table in one Region with backups copied to the other two Regions and restored after a failure."
+     },
+     {
+      "key": "D",
+      "text": "A global table using MREC and issuing strongly consistent reads in each Region."
+     }
+    ],
+    "answer": "A",
+    "explanation": "MRSC replicates each write synchronously to at least one other Region before acknowledging, and strongly consistent reads on any replica return the latest version, which gives zero RPO; it needs exactly three Regions (a witness can replace one replica), has higher write and strongly consistent read latency, and does not support transaction APIs, matching the stem. B is wrong because MREC is asynchronous: recent writes can be missing in another Region, and PITR protects against corruption, not replication lag. C is wrong because restoring from backups leaves an RPO and long RTO. D is wrong because with MREC a strongly consistent read only reflects writes applied in that replica's own Region; data from other Regions replicates eventually.",
+    "section": "Multi-Region data: DynamoDB global tables and S3 replication",
+    "reference": {
+     "label": "Using DynamoDB global tables",
+     "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-global-table-design.html"
+    }
+   },
+   {
+    "id": "kc-reliability-4",
+    "type": "single",
+    "question": "A fleet of EC2 workers in an Auto Scaling group drains an SQS queue. Each message takes an average of 0.5 seconds to process and the business accepts a maximum of 20 seconds of queue latency. The team wants a target tracking policy on a backlog-per-instance metric (ApproximateNumberOfMessagesVisible divided by InService instances). What target value should they configure?",
+    "options": [
+     {
+      "key": "A",
+      "text": "20 messages per instance"
+     },
+     {
+      "key": "B",
+      "text": "0.5 messages per instance"
+     },
+     {
+      "key": "C",
+      "text": "400 messages per instance"
+     },
+     {
+      "key": "D",
+      "text": "40 messages per instance"
+     }
+    ],
+    "answer": "D",
+    "explanation": "The acceptable backlog per instance equals the acceptable latency divided by the average processing time per message: 20 s / 0.5 s = 40 messages, so the group scales out when the backlog per instance exceeds 40. A uses the latency number itself and ignores processing time. B is the processing time, not a backlog. C multiplies instead of dividing, which would let the backlog grow ten times beyond what a single instance can clear within the latency limit. Targeting raw queue length would also ignore how many instances exist, causing over-provisioning while the queue drains.",
+    "section": "Auto Scaling policies and events",
+    "reference": {
+     "label": "Scaling policy based on Amazon SQS",
+     "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html"
+    }
+   },
+   {
+    "id": "kc-reliability-5",
+    "type": "single",
+    "question": "An expense workflow charges a card, then waits up to three weeks for a manager to approve, with retries on transient errors and a retained audit trail. The card charge must never run twice. Which implementation is most appropriate?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A synchronous Express workflow that polls for approval in a loop."
+     },
+     {
+      "key": "B",
+      "text": "A Standard workflow that uses a callback (waitForTaskToken) for the approval step and Retry on the task states."
+     },
+     {
+      "key": "C",
+      "text": "A chain of Lambda functions where one function sleeps until approval arrives."
+     },
+     {
+      "key": "D",
+      "text": "An asynchronous Express workflow with at-least-once execution and idempotency left to the card API."
+     }
+    ],
+    "answer": "B",
+    "explanation": "Standard workflows run up to one year, follow an exactly-once model for states unless Retry is specified, keep execution history for 90 days after close, and support the callback pattern so the workflow waits without polling. That fits a three-week human approval and a non-idempotent payment. A and D are wrong because Express workflows are limited to five minutes and are at-most-once (sync) or at-least-once (async), and do not support the callback and .sync patterns. C is wrong because Lambda has a limited execution time and a sleeping function is neither durable nor auditable, and it offers no built-in retry or state history.",
+    "section": "Lambda and Step Functions: concurrency, retries and orchestration",
+    "reference": {
+     "label": "Choosing workflow type in Step Functions",
+     "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+    }
+   }
+  ],
+  "new-solutions:security-requirements": [
+   {
+    "id": "kc-secreq-1",
+    "type": "single",
+    "question": "A company's compliance team requires that the key protecting an archive be rotated automatically every 180 days, with all earlier ciphertext still decryptable and no application changes. Which KMS configuration meets the requirement?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create a KMS key with origin EXTERNAL, import key material from the company HSM, and enable automatic rotation with a 180-day period."
+     },
+     {
+      "key": "B",
+      "text": "Create a customer managed symmetric encryption KMS key with KMS-generated key material and enable automatic key rotation with a rotation period of 180 days."
+     },
+     {
+      "key": "C",
+      "text": "Use the AWS managed key for the service and set its rotation period to 180 days."
+     },
+     {
+      "key": "D",
+      "text": "Create an asymmetric KMS key and enable automatic rotation every 180 days."
+     },
+     {
+      "key": "E",
+      "text": "Create a multi-Region key and rely on replication to a second Region to rotate the material."
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: automatic rotation is supported for customer managed symmetric encryption keys, the default period is 365 days and it can be configured between 90 and 2,560 days, and KMS keeps all earlier key material so old ciphertext still decrypts. A fails because automatic rotation cannot be enabled for keys with imported key material. C fails because AWS managed keys rotate on a fixed yearly schedule that you cannot configure. D fails because asymmetric KMS keys do not support automatic rotation. E fails because replicating a multi-Region key to another Region copies the key; it is not a rotation mechanism.",
+    "section": "Encryption at rest: KMS keys and service integrations",
+    "reference": {
+     "label": "The curious case of faster AWS KMS symmetric key rotation",
+     "url": "https://aws.amazon.com/blogs/security/the-curious-case-of-faster-aws-kms-symmetric-key-rotation/"
+    }
+   },
+   {
+    "id": "kc-secreq-2",
+    "type": "multi",
+    "question": "EC2 instances run in private subnets of a VPC that has no internet gateway and no NAT device. Operations staff must open shell sessions with AWS Systems Manager Session Manager. Which THREE interface VPC endpoints must exist (or an equivalent outbound path) for the instances to be managed? (Select THREE.)",
+    "options": [
+     {
+      "key": "A",
+      "text": "com.amazonaws.<region>.ssm"
+     },
+     {
+      "key": "B",
+      "text": "com.amazonaws.<region>.s3 (interface type)"
+     },
+     {
+      "key": "C",
+      "text": "com.amazonaws.<region>.ssmmessages"
+     },
+     {
+      "key": "D",
+      "text": "com.amazonaws.<region>.kms"
+     },
+     {
+      "key": "E",
+      "text": "com.amazonaws.<region>.ec2messages"
+     }
+    ],
+    "answer": "ACE",
+    "explanation": "Systems Manager managed instances without internet access need interface endpoints for ssm, ssmmessages and ec2messages (the alternative is outbound HTTPS on 443 to those public endpoints), so A, C and E are correct. B is not needed for Session Manager connectivity; S3 access matters for patch buckets or logging to S3 and is normally satisfied by a free gateway endpoint rather than an interface endpoint. D (KMS) is only needed if you encrypt session data or parameters with a customer managed key and call KMS from the instance; it is not part of the basic connectivity set.",
+    "section": "Service endpoints and private connectivity",
+    "reference": {
+     "label": "Improve the security of EC2 instances by using VPC endpoints for Systems Manager",
+     "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html"
+    }
+   },
+   {
+    "id": "kc-secreq-3",
+    "type": "single",
+    "question": "A web application on an Application Load Balancer is placed behind Amazon CloudFront. Security testing shows attackers can bypass CloudFront and request the ALB DNS name directly. Which combination best ensures the ALB accepts only traffic that came through the distribution?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Associate an AWS WAF web ACL with the CloudFront distribution only."
+     },
+     {
+      "key": "B",
+      "text": "Enable Shield Standard on the ALB."
+     },
+     {
+      "key": "C",
+      "text": "Replace the ALB security group rules with a network ACL that denies all non-US addresses."
+     },
+     {
+      "key": "D",
+      "text": "Configure CloudFront to add a secret custom header to origin requests, add a WAF rule on the ALB that blocks requests without the matching header, and restrict the ALB security group to the CloudFront origin-facing managed prefix list."
+     },
+     {
+      "key": "E",
+      "text": "Use an origin access control on the ALB origin so that CloudFront signs requests."
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is the documented pattern: the custom header gives application-level proof the request came from your distribution, and the managed prefix list com.amazonaws.global.cloudfront.origin-facing restricts the network path to CloudFront addresses; AWS recommends using both together. A protects the edge but does nothing about direct requests to the ALB. B is automatic for all customers and does not restrict who may reach the origin. C filters by geography, not by CloudFront, and the CloudFront edge addresses are worldwide. E fails because origin access control is for S3 and similar AWS origins, not an ALB.",
+    "section": "Attack mitigation for web applications and APIs",
+    "reference": {
+     "label": "Restrict access to Application Load Balancers",
+     "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html"
+    }
+   },
+   {
+    "id": "kc-secreq-4",
+    "type": "single",
+    "question": "A broker must keep trade confirmations unmodifiable for 6 years. The audit requirement says no one, including the account root user and holders of administrator permissions, may delete or shorten retention. Which S3 configuration satisfies this?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Enable versioning and MFA delete on the bucket."
+     },
+     {
+      "key": "B",
+      "text": "Enable S3 Object Lock in governance mode with a 6-year default retention and restrict s3:BypassGovernanceRetention to a security team."
+     },
+     {
+      "key": "C",
+      "text": "Enable S3 Object Lock in compliance mode with a 6-year retention period on a versioned bucket."
+     },
+     {
+      "key": "D",
+      "text": "Enable S3 Object Lock with a legal hold on every object."
+     },
+     {
+      "key": "E",
+      "text": "Apply an SCP that denies s3:DeleteObject to all principals."
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: in compliance mode a protected object version cannot be overwritten or deleted by any user, including root, and neither the mode nor the retention period can be shortened; the only way to remove it before expiry is to delete the account. B fails because principals with s3:BypassGovernanceRetention can still remove governance protection, so the stated requirement is not met. A offers protection against accidental deletion but not against an authorised principal. D is incomplete: a legal hold has no expiry and can be removed by users with permission, so it is not a fixed 6-year guarantee. E is a preventive guardrail that an organization administrator can change, and it does not stop overwrites.",
+    "section": "Encryption at rest: KMS keys and service integrations",
+    "reference": {
+     "label": "Locking objects with Object Lock",
+     "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+    }
+   },
+   {
+    "id": "kc-secreq-5",
+    "type": "single",
+    "question": "An application in account 111111111111 must read a database secret stored in Secrets Manager in a central security account 222222222222. The secret is encrypted with the AWS managed key aws/secretsmanager. The role is allowed GetSecretValue in an identity policy and the secret has a resource policy naming the role, yet the call fails with an access error on decryption. What is the correct fix?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Re-encrypt the secret with a customer managed KMS key in account 222222222222 and add a key policy statement that lets the application role use kms:Decrypt."
+     },
+     {
+      "key": "B",
+      "text": "Add kms:Decrypt to the application role's identity policy; the AWS managed key policy then allows it automatically."
+     },
+     {
+      "key": "C",
+      "text": "Edit the key policy of aws/secretsmanager to allow the role."
+     },
+     {
+      "key": "D",
+      "text": "Enable automatic rotation on the secret so that a new key version is issued to the external account."
+     },
+     {
+      "key": "E",
+      "text": "Copy the secret into account 111111111111 manually every time it changes."
+     }
+    ],
+    "answer": "A",
+    "explanation": "A is correct: for cross-account access the principal needs access to the secret (resource policy plus identity policy) and to the encryption key, and since the key policy of an AWS managed key cannot be edited, the secret must use a customer managed key whose key policy grants the external role kms:Decrypt. B fails because the identity policy alone cannot grant use of a key in another account; the key policy must allow it too. C is impossible because you cannot modify AWS managed key policies. D confuses secret rotation with key access; rotation does not change who can use the key. E defeats central management and rotation and is the operational-overhead distractor.",
+    "section": "Credential management and secure administrative access",
+    "reference": {
+     "label": "Access Secrets Manager secrets from a different account",
+     "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_examples_cross.html"
+    }
+   }
+  ],
+  "org-complexity:cost-visibility": [
+   {
+    "id": "kc-costvis-1",
+    "type": "single",
+    "question": "A company uses AWS Organizations. Engineers in several member accounts tag resources with a Project key. The finance team signs in to a member account, activates Project as a cost allocation tag, and an hour later the management-account Cost Explorer still cannot group by Project. What is the correct fix?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Wait 12 hours, because member-account activation replicates to the organization"
+     },
+     {
+      "key": "B",
+      "text": "Activate the Project tag in the management (payer) account Billing console and allow 24 to 48 hours"
+     },
+     {
+      "key": "C",
+      "text": "Enable a tag policy with enforcement for Project"
+     },
+     {
+      "key": "D",
+      "text": "Create a Cost and Usage Report in the member account"
+     },
+     {
+      "key": "E",
+      "text": "Add Project to a Trusted Advisor check"
+     }
+    ],
+    "answer": "B",
+    "explanation": "With linked accounts, cost allocation tags are activated in the payer (management) account, so activation elsewhere does not feed organization reports; after activation tags take about 24 to 48 hours to show. A is wrong because activation in a member account does not propagate. C is wrong because tag policies standardise tag values and do not activate tags for billing. D is wrong because a member account CUR holds only that member's data and tags still need activation. E is wrong because Trusted Advisor checks best practices and does not control billing tag activation.",
+    "section": "Tagging strategy and cost allocation",
+    "reference": {
+     "label": "Why can't I see cost allocation tags in Cost Explorer?",
+     "url": "https://repost.aws/knowledge-center/organizations-no-cost-allocation-tags"
+    }
+   },
+   {
+    "id": "kc-costvis-2",
+    "type": "multi",
+    "question": "Which TWO statements about AWS Budgets are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "A daily cost budget can send forecasted alerts the same way a monthly budget does"
+     },
+     {
+      "key": "B",
+      "text": "Budgets actions can apply an IAM policy, apply an SCP, or target EC2 or RDS instances"
+     },
+     {
+      "key": "C",
+      "text": "Budgets actions are supported on daily budgets"
+     },
+     {
+      "key": "D",
+      "text": "An actual-spend alert is sent once per budget per budget period when the threshold is first reached"
+     },
+     {
+      "key": "E",
+      "text": "Each alert can notify an unlimited number of email addresses"
+     }
+    ],
+    "answer": "BD",
+    "explanation": "B is correct because the three action types are IAM policies, SCPs and targeted EC2 or RDS instances. D is correct because actual alerts fire once per budget per period. A is wrong: daily budgets do not support forecasted alerts or variable targets. C is wrong because the multi-account guidance describes actions for monthly, quarterly or annual periods. E is wrong because an alert supports up to 10 email addresses plus one SNS topic.",
+    "section": "Budgets, anomaly detection and spend guardrails",
+    "reference": {
+     "label": "Best practices for AWS Budgets",
+     "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html"
+    }
+   },
+   {
+    "id": "kc-costvis-3",
+    "type": "single",
+    "question": "A company runs steady workloads on EC2, containers on AWS Fargate and functions on AWS Lambda across many accounts in an organization. Some EC2 workloads will move between instance families and Regions over the next three years. Which purchase minimises cost with the least ongoing management?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Standard Reserved Instances in every member account"
+     },
+     {
+      "key": "B",
+      "text": "EC2 Instance Savings Plans for each current instance family"
+     },
+     {
+      "key": "C",
+      "text": "A Compute Savings Plan sized to the steady hourly baseline, bought in the management account"
+     },
+     {
+      "key": "D",
+      "text": "Spot Instances for all workloads"
+     },
+     {
+      "key": "E",
+      "text": "On-Demand with a Budgets alert"
+     }
+    ],
+    "answer": "C",
+    "explanation": "Compute Savings Plans apply to EC2 regardless of family, size, Region, OS or tenancy and also to Fargate and Lambda, so shifts do not strand the commitment; buying centrally with sharing on pools demand. A is wrong because Standard RIs are EC2 only and cannot be exchanged. B is wrong because EC2 Instance Savings Plans are tied to one family in one Region and do not cover Fargate or Lambda. D is wrong because Spot can be interrupted and is unsuitable for steady baseline. E is wrong because it gives no discount.",
+    "section": "Purchasing options: On-Demand, Reserved Instances, Savings Plans, Spot",
+    "reference": {
+     "label": "Savings Plans types",
+     "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+    }
+   },
+   {
+    "id": "kc-costvis-4",
+    "type": "single",
+    "question": "A holding company wants its Legal account to keep the benefit of Reserved Instances it bought, but the management account turns off Reserved Instances and Savings Plans discount sharing for the Marketing account. Marketing runs instances that match Legal's RIs. What happens?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Marketing still receives Legal's RI discount because the organization pays one bill"
+     },
+     {
+      "key": "B",
+      "text": "Marketing's charges leave the consolidated bill"
+     },
+     {
+      "key": "C",
+      "text": "Marketing's usage is billed without RIs owned by other accounts, but its charges still roll up to the management account"
+     },
+     {
+      "key": "D",
+      "text": "Legal's RIs stop applying to Legal's own usage"
+     },
+     {
+      "key": "E",
+      "text": "The RI discount moves to Marketing automatically"
+     }
+    ],
+    "answer": "C",
+    "explanation": "With sharing off for an account, RI discounts apply only to RIs that account purchased, and discounts from other accounts do not apply to it, while its charges are still added to the consolidated bill paid by the management account. A and E are wrong because sharing off blocks receiving other accounts' discounts. B is wrong because consolidated billing continues. D is wrong because Legal's sharing setting is unchanged and the purchasing account still receives its own discount first.",
+    "section": "Commitments across an organization",
+    "reference": {
+     "label": "How is the pricing benefit of a Reserved Instance applied across an organization's consolidated bill?",
+     "url": "https://repost.aws/knowledge-center/ec2-ri-consolidated-billing"
+    }
+   },
+   {
+    "id": "kc-costvis-5",
+    "type": "single",
+    "question": "A storage team needs prefix-level trends over the past year for buckets in several Regions, delivered as dashboards with the least custom work. Which option fits?",
+    "options": [
+     {
+      "key": "A",
+      "text": "S3 Storage Lens with advanced metrics and prefix aggregation"
+     },
+     {
+      "key": "B",
+      "text": "S3 Storage Lens free metrics only"
+     },
+     {
+      "key": "C",
+      "text": "Trusted Advisor cost optimization checks"
+     },
+     {
+      "key": "D",
+      "text": "Compute Optimizer recommendations for S3"
+     },
+     {
+      "key": "E",
+      "text": "Cost Explorer's EC2 hourly resource-level data"
+     }
+    ],
+    "answer": "A",
+    "explanation": "Advanced metrics add prefix aggregation and keep data queryable for 15 months, while free metrics are bucket-level with 14 days of queryable history (B fails). Trusted Advisor (C) runs best-practice checks, not prefix trends. Compute Optimizer (D) does not recommend for S3 storage classes; it covers compute, EBS, databases and similar. Cost Explorer's EC2 resource-level data (E) covers EC2 instances and only the last 14 days.",
+    "section": "Rightsizing visibility: Compute Optimizer, Trusted Advisor, Storage Lens",
+    "reference": {
+     "label": "Amazon S3 Storage Lens metrics glossary",
+     "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_metrics_glossary.html"
+    }
+   }
+  ],
+  "org-complexity:multi-account": [
+   {
+    "id": "kc-multiacct-1",
+    "type": "single",
+    "question": "An organization uses a deny-list strategy with a Region-restriction SCP attached to the root. A platform engineer signs in to the management account with an administrator role and tries to launch an instance in a blocked Region. What happens?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The launch is denied because the SCP is attached at the root."
+     },
+     {
+      "key": "B",
+      "text": "The launch is denied unless the role is also listed in the SCP as an exception."
+     },
+     {
+      "key": "C",
+      "text": "The launch is allowed because SCPs do not affect users or roles in the management account."
+     },
+     {
+      "key": "D",
+      "text": "The launch is allowed only if a permissions boundary is also attached."
+     }
+    ],
+    "answer": "C",
+    "explanation": "Per the Organizations documentation, SCPs affect only member accounts and have no effect on users or roles in the management account, so the administrator role there can act regardless of the Region SCP. A is wrong because attachment at the root does not extend to the management account. B is wrong because no exception list is needed, the account is simply outside SCP evaluation. D is wrong because permissions boundaries are an IAM feature unrelated to this outcome. This is why management accounts should hold no workloads.",
+    "section": "SCPs and other organization policy types",
+    "reference": {
+     "label": "Service control policies",
+     "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    }
+   },
+   {
+    "id": "kc-multiacct-2",
+    "type": "multi",
+    "question": "A team wants a CloudFormation StackSet with service-managed permissions that deploys an IAM role to all current and future accounts under an OU. Which TWO statements are true?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The organization must have all features enabled and trusted access with StackSets enabled."
+     },
+     {
+      "key": "B",
+      "text": "Stack instances are also created in the management account if it is in the target OU."
+     },
+     {
+      "key": "C",
+      "text": "Enabling automatic deployment adds the role to accounts added to the OU later."
+     },
+     {
+      "key": "D",
+      "text": "Nested stacks are supported if they are in the same Region."
+     },
+     {
+      "key": "E",
+      "text": "Accounts outside the organization can be added by listing their account IDs."
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A is correct: service-managed StackSets require all features (consolidated billing only is insufficient) and trusted access. C is correct: auto deployment applies the stack set to accounts added to the targeted OU in future. B is wrong because CloudFormation does not deploy stacks to the management account even if it belongs to the OU. D is wrong because service-managed StackSets do not support nested stacks or templates with macros or transforms. E is wrong because you cannot target accounts outside the organization.",
+    "section": "Governance at scale: StackSets, quotas and security services",
+    "reference": {
+     "label": "Create StackSets with service-managed permissions",
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html"
+    }
+   },
+   {
+    "id": "kc-multiacct-3",
+    "type": "single",
+    "question": "A company invites an existing AWS account into its organization and the account accepts. The security team now cannot assume an administrator role in that account from the management account. What is the correct fix?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Wait for Organizations to create OrganizationAccountAccessRole automatically."
+     },
+     {
+      "key": "B",
+      "text": "Create an IAM role named OrganizationAccountAccessRole in the invited account that trusts the management account."
+     },
+     {
+      "key": "C",
+      "text": "Attach an SCP granting sts:AssumeRole to the OU."
+     },
+     {
+      "key": "D",
+      "text": "Enable all features so the role is created."
+     }
+    ],
+    "answer": "B",
+    "explanation": "The documentation states that invited accounts do not automatically get an administrator role; you create it manually and should use the same name OrganizationAccountAccessRole for consistency. A is wrong because the role is only auto-created for accounts created through Organizations. C is wrong because SCPs never grant permissions. D is wrong because enabling all features is about the feature set and handshake approvals, and does not create access roles.",
+    "section": "Organizations: accounts, OUs and access",
+    "reference": {
+     "label": "Creating OrganizationAccountAccessRole for an invited account",
+     "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create-cross-account-role.html"
+    }
+   },
+   {
+    "id": "kc-multiacct-4",
+    "type": "single",
+    "question": "RDS snapshots encrypted with the default aws/rds KMS key must be copied by AWS Backup to a vault in an isolated account. What must be done first?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Share the aws/rds key policy with the backup account."
+     },
+     {
+      "key": "B",
+      "text": "Copy to the destination account's default backup vault, which is encrypted with an AWS managed key."
+     },
+     {
+      "key": "C",
+      "text": "Enable Vault Lock on the source vault."
+     },
+     {
+      "key": "D",
+      "text": "Re-encrypt the resource with a customer managed KMS key and use a destination vault encrypted with a customer managed key."
+     }
+    ],
+    "answer": "D",
+    "explanation": "AWS documentation states that cross-account copy for resources not fully managed by AWS Backup does not support AWS managed keys because their key policy is immutable; use a customer managed key and a vault with a customer managed key. A fails because the aws/rds key policy cannot be changed. B fails because the default vault uses an AWS managed key which cannot be shared. C is useful for immutability but does not solve the key problem.",
+    "section": "Resource sharing across accounts",
+    "reference": {
+     "label": "Encryption for backups in AWS Backup",
+     "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/encryption.html"
+    }
+   },
+   {
+    "id": "kc-multiacct-5",
+    "type": "single",
+    "question": "A network account shares VPC subnets with the organization through AWS RAM. Which action can an application account (participant) perform in a shared subnet?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Launch its own EC2 instances and create its own security groups for them."
+     },
+     {
+      "key": "B",
+      "text": "Create a NAT gateway in the shared subnet."
+     },
+     {
+      "key": "C",
+      "text": "Modify the route table associated with the subnet."
+     },
+     {
+      "key": "D",
+      "text": "Use the VPC default security group for its instances."
+     }
+    ],
+    "answer": "A",
+    "explanation": "Participants can create and manage their own application resources, such as EC2 instances, in shared subnets, and security groups are controlled in each account separately. B is wrong because participants cannot create, delete or describe NAT gateways in a shared subnet. C is wrong because participants cannot create, delete or associate route tables. D is wrong because the default security group belongs to the VPC owner and participants cannot use it for resources.",
+    "section": "Resource sharing across accounts",
+    "reference": {
+     "label": "Responsibilities and permissions for owners and participants",
+     "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-share-limitations.html"
+    }
+   }
+  ],
+  "org-complexity:network-connectivity": [
+   {
+    "id": "kc-netconn-1",
+    "type": "single",
+    "question": "A company runs one transit gateway with six spoke VPCs (three production, three development) and one shared-services VPC that hosts DNS and directory services. Production and development VPCs must not be able to reach each other, but both must reach shared services and receive replies. The company wants isolation enforced by routing rather than by security group rules alone. Which configuration meets the requirement?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Associate every attachment with the default route table, enable propagation from every attachment into it, and block production-to-development traffic with security groups."
+     },
+     {
+      "key": "B",
+      "text": "Create one route table for all attachments and add blackhole routes for the production and development CIDRs on the shared-services attachment."
+     },
+     {
+      "key": "C",
+      "text": "Create separate production and development route tables and associate each VPC attachment with its environment's table. Propagate the shared-services attachment into both environment tables, and propagate each environment's VPC attachments into a route table associated with the shared-services attachment only."
+     },
+     {
+      "key": "D",
+      "text": "Create two transit gateways, one per environment, peer them, and connect the shared-services VPC to the production gateway only."
+     },
+     {
+      "key": "E",
+      "text": "Create VPC peering connections between each spoke and the shared-services VPC and remove the transit gateway attachments."
+     }
+    ],
+    "answer": "C",
+    "explanation": "Each transit gateway attachment is associated with one route table and can propagate to several, so isolation is built by choosing which tables learn which routes. In C, production and development tables contain only their own routes plus shared services, so the two environments have no route to each other, and the shared-services table learns both so replies return. A relies on security groups and a flat route table, so a rule mistake exposes the environments; the requirement asks for routing-level enforcement. B would blackhole traffic the shared-services VPC must send back, breaking replies. D adds a second gateway and static peering routes, and leaves development without shared services. E discards the transit gateway and creates a mesh that scales poorly.",
+    "section": "Transit Gateway and Cloud WAN",
+    "reference": {
+     "label": "Transit gateway route tables",
+     "url": "https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"
+    }
+   },
+   {
+    "id": "kc-netconn-2",
+    "type": "multi",
+    "question": "A company is designing a Direct Connect architecture with a Direct Connect gateway. Which TWO statements about Direct Connect gateways are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "The same Direct Connect gateway can be associated with a virtual private gateway and with a transit gateway at the same time."
+     },
+     {
+      "key": "B",
+      "text": "A private virtual interface to a Direct Connect gateway can reach VPCs in several AWS Regions through virtual private gateway associations."
+     },
+     {
+      "key": "C",
+      "text": "Two VPCs associated with the same Direct Connect gateway can exchange traffic through the Direct Connect gateway."
+     },
+     {
+      "key": "D",
+      "text": "VPCs associated with the same Direct Connect gateway cannot have overlapping CIDR blocks."
+     },
+     {
+      "key": "E",
+      "text": "A public virtual interface can be created to a Direct Connect gateway to reach public AWS services in every Region."
+     }
+    ],
+    "answer": "BD",
+    "explanation": "B is correct: a Direct Connect gateway is a global construct and a private virtual interface attached to it can use virtual private gateway associations to reach VPCs in different Regions. D is correct: the documentation states that VPCs connected through a Direct Connect gateway cannot have overlapping CIDR blocks. A is wrong because a Direct Connect gateway cannot be attached to a transit gateway if it is already associated with a virtual private gateway, and the reverse also holds. C is wrong because direct communication between VPCs associated with a single Direct Connect gateway is not supported, including hairpinning through on premises. E is wrong because you cannot create a public virtual interface to a Direct Connect gateway; public virtual interfaces reach public endpoints directly.",
+    "section": "Direct Connect and Direct Connect gateway",
+    "reference": {
+     "label": "Direct Connect virtual private gateway associations",
+     "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/virtualgateways.html"
+    }
+   },
+   {
+    "id": "kc-netconn-3",
+    "type": "single",
+    "question": "A network team plans to change transit gateway route tables and network ACLs in a production environment spanning two accounts. Before the change window, they want to confirm that an application server can reach a database on TCP port 5432 in the other account, and if not, which component blocks the path. They must not send any test traffic. Which tool should they use?",
+    "options": [
+     {
+      "key": "A",
+      "text": "VPC Reachability Analyzer, creating a path from the server network interface to the database network interface with destination port 5432."
+     },
+     {
+      "key": "B",
+      "text": "VPC Flow Logs on both network interfaces, then search for ACCEPT records on port 5432."
+     },
+     {
+      "key": "C",
+      "text": "VPC Traffic Mirroring from the database network interface to a monitoring instance."
+     },
+     {
+      "key": "D",
+      "text": "Amazon CloudWatch Logs Insights over the Route 53 Resolver query logs."
+     },
+     {
+      "key": "E",
+      "text": "A Site-to-Site VPN connection between the two VPCs to carry a test connection."
+     }
+    ],
+    "answer": "A",
+    "explanation": "Reachability Analyzer builds a model of the configuration (route tables, security groups, network ACLs, transit gateway tables) and reports whether the path is reachable and which component blocks it, without sending packets or analyzing the data plane. B only shows traffic that already happened, so it cannot validate a path before the change or without test traffic. C copies live packets for inspection and says nothing about configuration. D covers DNS queries, not whether a TCP path is open. E adds new infrastructure and is not a way to test an existing path.",
+    "section": "Traffic monitoring and troubleshooting",
+    "reference": {
+     "label": "How Reachability Analyzer works",
+     "url": "https://docs.aws.amazon.com/vpc/latest/reachability/how-reachability-analyzer-works.html"
+    }
+   },
+   {
+    "id": "kc-netconn-4",
+    "type": "single",
+    "question": "A data center is connected to a VPC with a Direct Connect private virtual interface. Backup software must write objects to Amazon S3 over private IP addresses, with no use of the internet and no public virtual interface. Which design meets the requirement?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create an S3 gateway endpoint in the VPC and add the S3 prefix list route to the on-premises routers."
+     },
+     {
+      "key": "B",
+      "text": "Create a NAT gateway in a public subnet and route the backup traffic through it to S3."
+     },
+     {
+      "key": "C",
+      "text": "Peer the VPC with the S3 service VPC and update the on-premises route tables."
+     },
+     {
+      "key": "D",
+      "text": "Create an S3 interface endpoint in the VPC, and have the backup software use the endpoint-specific S3 DNS name (or forward DNS to the VPC) so requests resolve to the endpoint's private IPs over the private virtual interface."
+     },
+     {
+      "key": "E",
+      "text": "Create a second gateway endpoint in a different Region and connect it with Transit Gateway peering."
+     }
+    ],
+    "answer": "D",
+    "explanation": "Interface endpoints use private IP addresses from the VPC, so on-premises clients reaching the VPC over Direct Connect or VPN can use them, and S3 interface endpoints require endpoint-specific DNS names. A fails because gateway endpoints are route-table targets that use S3 public addresses and do not allow access from on premises. B sends traffic toward the internet, violating the requirement. C is not possible; you cannot peer with an AWS service VPC. E repeats the gateway endpoint limitation and adds cross-Region complexity without solving on-premises access.",
+    "section": "PrivateLink and VPC endpoints",
+    "reference": {
+     "label": "AWS PrivateLink for Amazon S3",
+     "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/privatelink-interface-endpoints.html"
+    }
+   },
+   {
+    "id": "kc-netconn-5",
+    "type": "single",
+    "question": "A financial company needs a hybrid network design that targets the maximum Direct Connect resiliency (99.99% SLA design) for connectivity between one on-premises region and AWS. Which Direct Connect topology matches that level?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Two connections from one router in one on-premises location to two ports on different devices in the same Direct Connect location."
+     },
+     {
+      "key": "B",
+      "text": "Separate connections that end on distinct devices in more than one on-premises location and more than one Direct Connect location."
+     },
+     {
+      "key": "C",
+      "text": "One 100 Gbps connection with a link aggregation group of four member ports at a single Direct Connect location."
+     },
+     {
+      "key": "D",
+      "text": "One connection with a Site-to-Site VPN backup over two ISPs."
+     },
+     {
+      "key": "E",
+      "text": "Two connections to two Direct Connect locations that terminate on the same on-premises router."
+     }
+    ],
+    "answer": "B",
+    "explanation": "The Well-Architected reliability guidance describes maximum resiliency (99.99%) as separate connections on distinct devices in more than one on-premises location and more than one Direct Connect location, which protects against device failures, connectivity problems and a complete location outage. A and C leave a single location and, in A, a single on-premises router as shared fate. D is a useful low-cost backup but VPN uses the internet and does not reach this design level. E uses two Direct Connect locations but a single on-premises router remains a single point of failure, so it is closer to the high-resiliency model at best.",
+    "section": "Direct Connect and Direct Connect gateway",
+    "reference": {
+     "label": "REL02-BP02 Provision redundant connectivity",
+     "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_planning_network_topology_ha_conn_private_networks.html"
+    }
+   }
+  ],
+  "org-complexity:resilient-architectures": [
+   {
+    "id": "kc-resarch-1",
+    "type": "single",
+    "question": "A retailer's order system must survive the loss of its primary Region with an RPO of a few minutes and an RTO of tens of minutes. Leadership wants the lowest ongoing cost that still meets both targets. Which DR strategy fits best?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Backup and restore using nightly snapshots copied to the recovery Region"
+     },
+     {
+      "key": "B",
+      "text": "Multi-site active/active across two Regions"
+     },
+     {
+      "key": "C",
+      "text": "Pilot light: data replicated and always on in the recovery Region, application servers created on demand"
+     },
+     {
+      "key": "D",
+      "text": "Multi-AZ deployment in the primary Region only"
+     }
+    ],
+    "answer": "C",
+    "explanation": "Pilot light keeps the data layer (databases, object storage) replicated and running in the recovery Region while application compute is not deployed until needed, which Well-Architected associates with an RPO in minutes and an RTO in tens of minutes at lower cost than warm standby or active/active. A is wrong because nightly snapshots give an RPO of hours and recovery by redeploying and restoring gives a longer RTO. B meets the targets but is the most expensive and complex strategy, violating the lowest-cost requirement. D protects against AZ failure only, so it does not survive loss of a Region.",
+    "section": "RTO, RPO and the four DR strategies",
+    "reference": {
+     "label": "Use defined recovery strategies",
+     "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_planning_for_recovery_disaster_recovery.html"
+    }
+   },
+   {
+    "id": "kc-resarch-2",
+    "type": "multi",
+    "question": "Which TWO statements about an Amazon Aurora global database are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "It uses engine-level logical replication with unlimited secondary Regions"
+     },
+     {
+      "key": "B",
+      "text": "Replication is asynchronous, storage-based, to up to five read-only secondary Regions"
+     },
+     {
+      "key": "C",
+      "text": "A headless secondary cluster has no DB instance, so you pay for storage but not compute"
+     },
+     {
+      "key": "D",
+      "text": "A planned switchover always loses a few seconds of data because replication is asynchronous"
+     },
+     {
+      "key": "E",
+      "text": "Backtrack can be used on clusters that belong to a global database"
+     }
+    ],
+    "answer": "BC",
+    "explanation": "Documentation states that an Aurora global database has a primary cluster and up to five read-only secondary clusters in other Regions, using asynchronous storage block-based replication (B), and that a headless secondary without a DB instance incurs storage but not compute charges while staying in sync (C). A is wrong: replication uses the cluster storage volume rather than the engine, and the number of secondaries is limited to five. D is wrong because switchover synchronizes the secondaries first, so RPO is 0; it is unplanned failover that can lose unreplicated writes. E is wrong because Backtrack is listed as not supported with Aurora Global Database.",
+    "section": "Database disaster recovery options",
+    "reference": {
+     "label": "Aurora global databases",
+     "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+    }
+   },
+   {
+    "id": "kc-resarch-3",
+    "type": "single",
+    "question": "After failing over a Linux EC2 source workload from us-east-1 to eu-west-1 with AWS Elastic Disaster Recovery, the operations team wants to protect the recovered instances and eventually return to the original Region. What should they do first?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Start reversed replication from the recovery instances back to the original Region"
+     },
+     {
+      "key": "B",
+      "text": "Delete the DRS staging resources in the original Region so they cannot conflict"
+     },
+     {
+      "key": "C",
+      "text": "Redirect traffic by using a DRS failover policy configured in the service"
+     },
+     {
+      "key": "D",
+      "text": "Install the Failback Client ISO on the recovered EC2 instances"
+     }
+    ],
+    "answer": "A",
+    "explanation": "After a cross-Region recovery the recovered instances are not protected, and AWS advises starting reversed replication immediately, then failing back once replication is healthy (A). B is wrong because new staging resources are created and the original Region must have DRS initialized for failback. C is wrong because redirecting user traffic is performed outside DRS, for example with DNS. D is wrong because the Failback Client ISO is the mechanism for on-premises sources; for AWS sources you use reverse replication.",
+    "section": "AWS Elastic Disaster Recovery (DRS)",
+    "reference": {
+     "label": "Failback with Elastic Disaster Recovery",
+     "url": "https://docs.aws.amazon.com/drs/latest/userguide/failback.html"
+    }
+   },
+   {
+    "id": "kc-resarch-4",
+    "type": "single",
+    "question": "A Route 53 failover record pair is configured for an application with a health check on both the primary and the secondary record. A Regional event makes both endpoints fail their health checks. What does Route 53 return for DNS queries?",
+    "options": [
+     {
+      "key": "A",
+      "text": "No answer, because no healthy record exists"
+     },
+     {
+      "key": "B",
+      "text": "The secondary record, because failover has been triggered"
+     },
+     {
+      "key": "C",
+      "text": "A random choice between the two records"
+     },
+     {
+      "key": "D",
+      "text": "The primary record"
+     }
+    ],
+    "answer": "D",
+    "explanation": "The CloudFormation reference for failover record sets states that when the secondary record set is unhealthy, Route 53 responds with the primary record set regardless of the health of the primary, and the Route 53 blog states that if both are unhealthy it returns the primary. A is wrong because Route 53 still answers. B is wrong because the secondary is itself unhealthy. C is wrong because failover routing is deterministic, not random.",
+    "section": "Traffic redirection and failover control",
+    "reference": {
+     "label": "AWS::Route53::RecordSet",
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-route53-recordset.md"
+    }
+   },
+   {
+    "id": "kc-resarch-5",
+    "type": "single",
+    "question": "An EC2 instance in an Auto Scaling group fails its system status check because of an underlying host problem, and a different instance has a hung application that still passes EC2 status checks. Which statement is correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "EC2 auto recovery restores both because it also checks the application"
+     },
+     {
+      "key": "B",
+      "text": "Only ELB health checks enabled on the Auto Scaling group replace the instance whose application hung; host failures can be recovered by EC2 auto recovery, losing RAM contents"
+     },
+     {
+      "key": "C",
+      "text": "Auto Scaling never replaces instances; only CloudWatch alarms can"
+     },
+     {
+      "key": "D",
+      "text": "Auto recovery preserves RAM contents and instance store data"
+     }
+    ],
+    "answer": "B",
+    "explanation": "Auto Scaling replaces instances on EC2 status check failures and, when ELB health checks are enabled, also when the load balancer reports them unhealthy, which is how a hung application is caught. EC2 automatic recovery handles system status check failures from host hardware or software problems, but RAM content is lost and uptime restarts. A is wrong because recovery relies on status checks, not application checks, and does not fix instance status check failures. C is wrong since Auto Scaling does replace unhealthy instances. D is wrong because RAM is lost, and with CloudWatch action-based recovery instance store data is lost too.",
+    "section": "Designing for automatic recovery from failure",
+    "reference": {
+     "label": "EC2 automatic instance recovery",
+     "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html"
+    }
+   }
+  ],
+  "org-complexity:security-controls": [
+   {
+    "id": "kc-seccontrols-1",
+    "type": "single",
+    "question": "A media company's analytics account (Account M) must decrypt objects stored in an S3 bucket in Account S that are encrypted with a customer managed KMS key owned by Account S. The key policy in Account S contains only the default statement that lets Account S use IAM policies. A role in Account M already has S3 read permissions on the bucket and the bucket policy allows it. Downloads still fail with an access denied error. What is the most appropriate fix?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Add kms:Decrypt to the identity policy of the role in Account M only."
+     },
+     {
+      "key": "B",
+      "text": "Add an SCP in Account M that allows kms:Decrypt."
+     },
+     {
+      "key": "C",
+      "text": "Add a statement to the key policy in Account S that allows the Account M role or account to use the key, and add kms:Decrypt on the key ARN to the role's identity policy in Account M."
+     },
+     {
+      "key": "D",
+      "text": "Re-encrypt the objects with the AWS managed key aws/s3 so that both accounts can use it."
+     },
+     {
+      "key": "E",
+      "text": "Add the Account M role to the bucket policy with kms:Decrypt as an action."
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct because cross-account KMS use needs both sides: the key policy in the owning account must allow the external principal or account, and the external account must delegate the permission through an IAM policy. A fails because an IAM policy in Account M has no effect unless the key policy allows Account M to use the key. B fails because SCPs never grant permissions; they only set maximums. D fails because the key policy of an AWS managed key cannot be edited to allow another account (this specific restriction was not confirmed on a page read, so treat it as a rule of thumb) and it would also not match a requirement for keys the owner controls. E fails because kms:Decrypt is a KMS action governed by the key policy and IAM, not an S3 bucket policy action.",
+    "section": "Encryption and secrets: KMS, S3, Secrets Manager and ACM",
+    "reference": {
+     "label": "Allowing users in other accounts to use a KMS key",
+     "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+    }
+   },
+   {
+    "id": "kc-seccontrols-2",
+    "type": "multi",
+    "question": "Which TWO statements about AWS Organizations service control policies (SCPs) are correct?",
+    "options": [
+     {
+      "key": "A",
+      "text": "An SCP never grants permissions; it defines the maximum permissions available to IAM users and roles in member accounts."
+     },
+     {
+      "key": "B",
+      "text": "An SCP attached to the root of the organization restricts the actions of the management account's users."
+     },
+     {
+      "key": "C",
+      "text": "An SCP on the account that owns an S3 bucket does not restrict a user from an account outside the organization who is granted access by the bucket policy."
+     },
+     {
+      "key": "D",
+      "text": "An SCP that allows s3:* gives an IAM user in the member account access to S3 even if the user has no IAM policy."
+     },
+     {
+      "key": "E",
+      "text": "An SCP can directly rewrite the resource-based policies attached to resources in member accounts."
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A and C are correct. SCPs set maximum permissions and never grant them, and they affect only principals managed by accounts in the organization, so an outside account's user who reaches a bucket through its bucket policy is not subject to the owner's SCP (the documentation uses exactly this bucket example). B is wrong because SCPs have no effect on users and roles in the management account. D is wrong because users still need IAM permission policies; an SCP allow with no IAM policy yields no access. E is wrong because SCPs do not change or affect resource-based policies directly.",
+    "section": "Guardrails: SCPs, permissions boundaries, ABAC and MFA conditions",
+    "reference": {
+     "label": "Service control policies",
+     "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    }
+   },
+   {
+    "id": "kc-seccontrols-3",
+    "type": "single",
+    "question": "Cloud engineers use IAM access keys with the AWS CLI. The security team wants CLI calls to succeed only when the session was authenticated with MFA, without blocking the engineers from setting up their MFA device. Which policy design works?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Attach an Allow policy with a Bool condition that aws:MultiFactorAuthPresent equals true to the group."
+     },
+     {
+      "key": "B",
+      "text": "Attach a Deny policy with a Bool condition that aws:MultiFactorAuthPresent equals false and rely on console prompts."
+     },
+     {
+      "key": "C",
+      "text": "Enable MFA on the root user only; IAM users inherit it."
+     },
+     {
+      "key": "D",
+      "text": "Attach a Deny with NotAction listing MFA setup actions and sts:GetSessionToken, using a BoolIfExists condition for aws:MultiFactorAuthPresent equal to false, and have users call GetSessionToken with the MFA serial and token."
+     },
+     {
+      "key": "E",
+      "text": "Rotate the access keys every 30 days; rotated keys are treated as MFA-authenticated."
+     }
+    ],
+    "answer": "D",
+    "explanation": "D is correct: the condition key is absent for long-term access key requests, so the deny must use BoolIfExists to match, and the NotAction list keeps MFA setup and GetSessionToken usable so engineers can obtain MFA-backed temporary credentials. A fails because an allow with a Bool condition on its own does not block access granted by other policies, and does not handle a missing key. B fails because Bool false cannot match when the key is not present, so CLI requests with access keys would not be denied, and console prompts do not apply to CLI keys. C fails because root MFA does not apply to IAM users. E fails because key rotation does not create an MFA context.",
+    "section": "Guardrails: SCPs, permissions boundaries, ABAC and MFA conditions",
+    "reference": {
+     "label": "Amazon EC2: Requires MFA (GetSessionToken) for specific EC2 operations",
+     "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_ec2_require-mfa.html"
+    }
+   },
+   {
+    "id": "kc-seccontrols-4",
+    "type": "single",
+    "question": "A company wants one place to view GuardDuty, Inspector and posture findings from 60 accounts in four Regions, automatically including new accounts, and to forward every finding to a central logging bucket with one EventBridge rule. Which design meets this with the least operational effort?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Run a Lambda function in every account and Region that copies findings to S3."
+     },
+     {
+      "key": "B",
+      "text": "Designate a delegated administrator for Security Hub, enable central configuration for the organization, configure cross-Region aggregation to a home Region, and create one EventBridge rule in the home Region that sends findings to Firehose and the logging bucket."
+     },
+     {
+      "key": "C",
+      "text": "Enable Security Hub only in the management account and rely on member accounts to push findings manually."
+     },
+     {
+      "key": "D",
+      "text": "Create an EventBridge rule in each member account and Region that sends findings to the central bucket."
+     },
+     {
+      "key": "E",
+      "text": "Use CloudTrail data events to read the findings."
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: Security Hub CSPM is Regional, and the documented pattern is delegated administrator, central configuration, cross-Region aggregation to a home Region, then one EventBridge rule in the home Region to Firehose and the logging bucket, with no intermediate aggregation step. A and D add per-account, per-Region custom plumbing, which is the overhead the stem asks to avoid. C fails because member accounts do not push findings manually and the management account should not be the workload aggregation point. E fails because CloudTrail data events record resource-level API activity, not security findings.",
+    "section": "Detection, auditing and central security events",
+    "reference": {
+     "label": "Understanding cross-Region aggregation in Security Hub CSPM",
+     "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/finding-aggregation.html"
+    }
+   },
+   {
+    "id": "kc-seccontrols-5",
+    "type": "single",
+    "question": "An application uses an Application Load Balancer as the origin for a CloudFront distribution. The company wants the ALB to accept traffic only from CloudFront at the network level, without maintaining its own list of IP addresses. What should the solutions architect do?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Allow 0.0.0.0/0 on the ALB security group and add a network ACL deny for known bad IPs."
+     },
+     {
+      "key": "B",
+      "text": "Add the AWS-managed prefix list com.amazonaws.global.cloudfront.origin-facing as the source of the ALB security group's inbound rules."
+     },
+     {
+      "key": "C",
+      "text": "Place the ALB in a public subnet and use an SCP to deny other sources."
+     },
+     {
+      "key": "D",
+      "text": "Request an ACM certificate in the ALB's Region and attach it; certificates restrict who can connect."
+     },
+     {
+      "key": "E",
+      "text": "Attach AWS Config to the ALB to block non-CloudFront traffic."
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: CloudFront documentation describes limiting the ALB security group to the AWS-managed origin-facing prefix list so traffic not from CloudFront cannot reach the ALB at layers 3 and 4, and AWS keeps the list current. A leaves the ALB open to the internet and a deny list cannot enumerate every non-CloudFront source. C fails because SCPs govern IAM principals, not network sources. D fails because a TLS certificate provides encryption and identity, not source restriction. E fails because Config records and evaluates configuration; it does not filter packets. Adding a custom header check in WAF further verifies the specific distribution.",
+    "section": "Network and data-perimeter controls",
+    "reference": {
+     "label": "Restrict access to Application Load Balancers",
+     "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html"
+    }
+   }
+  ],
+  "orientation:certification-map": [
+   {
+    "id": "kc-orient-1",
+    "type": "single",
+    "question": "A candidate has strong networking skills but is weak on cost topics and asks whether failing the cost sections means failing the exam. Which statement matches the official SAP-C02 scoring description?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Yes; each domain has its own minimum score of 750"
+     },
+     {
+      "key": "B",
+      "text": "Yes; a failing classification in any one section fails the exam"
+     },
+     {
+      "key": "C",
+      "text": "No; the exam uses a compensatory model, so only the overall scaled score of 750 or more is needed"
+     },
+     {
+      "key": "D",
+      "text": "No; but unanswered questions are ignored rather than scored incorrect"
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is correct: the guide says the exam is scored on a scaled 100-1,000 range with a minimum passing score of 750, uses a compensatory model, and you do not need to pass each section. A and B describe a non-compensatory model that the guide explicitly rules out. D is wrong because the guide states unanswered questions are scored as incorrect, which is also why you should answer every question.",
+    "section": "Format, scoring and the SAP-C03 transition",
+    "reference": {
+     "label": "SAP-C02 exam guide",
+     "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html"
+    }
+   },
+   {
+    "id": "kc-orient-2",
+    "type": "single",
+    "question": "Which distribution of scored questions across domains matches the SAP-C02 guide?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Organizational complexity 20%, New solutions 25%, Continuous improvement 29%, Migration 26%"
+     },
+     {
+      "key": "B",
+      "text": "Organizational complexity 26%, New solutions 29%, Continuous improvement 25%, Migration 20%"
+     },
+     {
+      "key": "C",
+      "text": "Organizational complexity 25%, New solutions 25%, Continuous improvement 15%, Migration 15%"
+     },
+     {
+      "key": "D",
+      "text": "Each of the four domains is weighted 25%"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is the weighting in the SAP-C02 guide: 26/29/25/20, which makes Domain 2 (Design for New Solutions) the largest. A reorders the numbers and puts the biggest weight on the wrong domain. C is taken from the SAP-C03 comparison, which has five domains weighted 25/25/15/15/20, not the SAP-C02 blueprint. D is incorrect because the guide publishes unequal weights.",
+    "section": "Domains, weights and task map",
+    "reference": {
+     "label": "SAP-C02 exam guide",
+     "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html"
+    }
+   },
+   {
+    "id": "kc-orient-3",
+    "type": "multi",
+    "question": "Select TWO true statements about the SAP-C02 exam format from the official guide.",
+    "options": [
+     {
+      "key": "A",
+      "text": "The exam has 65 scored and 10 unscored questions, and unscored questions are not identified"
+     },
+     {
+      "key": "B",
+      "text": "Wrong answers on multiple-choice questions subtract points"
+     },
+     {
+      "key": "C",
+      "text": "Multiple-response questions give partial credit for each correct option selected"
+     },
+     {
+      "key": "D",
+      "text": "Multiple-response questions have two or more correct answers out of five or more options and all must be selected for credit"
+     },
+     {
+      "key": "E",
+      "text": "The exam is scored from 0 to 100 with a pass mark of 70"
+     }
+    ],
+    "answer": "AD",
+    "explanation": "A and D are stated in the guide: 65 questions affect the score and 10 unscored ones are unidentified; multiple response means 2+ correct of 5+ options and all must be selected. B is wrong because there is no penalty for guessing. C is wrong because credit requires all correct responses. E is wrong because the scale is 100-1,000 with a minimum passing score of 750.",
+    "section": "Format, scoring and the SAP-C03 transition",
+    "reference": {
+     "label": "SAP-C02 exam guide",
+     "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html"
+    }
+   },
+   {
+    "id": "kc-orient-4",
+    "type": "single",
+    "question": "A question asks for the solution with the LEAST operational overhead and two options meet every functional and numeric requirement. Which approach does the Well-Architected framing suggest?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Pick the option with the most services because it is more resilient"
+     },
+     {
+      "key": "B",
+      "text": "Treat the keyword as pointing to the operational excellence pillar and prefer the managed or automated option"
+     },
+     {
+      "key": "C",
+      "text": "Pick the cheapest option regardless of the stem"
+     },
+     {
+      "key": "D",
+      "text": "Pick the option that uses the newest service"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is correct: 'least operational overhead' is a cue for the operational excellence pillar (run and automate with minimal manual work), so after hard requirements are satisfied the managed or automated design wins. A is wrong because adding components usually increases overhead. C applies the cost pillar, which the stem did not request. D is not a Well-Architected criterion; novelty is not a requirement.",
+    "section": "Well-Architected pillars as the tie-breaker",
+    "reference": {
+     "label": "The pillars of the Well-Architected Framework",
+     "url": "https://docs.aws.amazon.com/wellarchitected/latest/migration-lens/well-architected-framework-pillars.html"
+    }
+   }
+  ],
+  "orientation:study-toolkit": [
+   {
+    "id": "kc-toolkit-1",
+    "type": "single",
+    "question": "You applied a user-defined tag Project=sapc02 to lab resources and, a day later, cannot filter costs by it in the cost reports. What is the most likely missing step?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Create an SCP that requires the tag"
+     },
+     {
+      "key": "B",
+      "text": "Activate the tag key as a cost allocation tag in the Billing and Cost Management console"
+     },
+     {
+      "key": "C",
+      "text": "Create a new AWS Budget for each tag value"
+     },
+     {
+      "key": "D",
+      "text": "Re-create the resources so the tag is inherited"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B is right: user-defined tags only appear in billing reports after the tag key is activated as a cost allocation tag; keys can take up to 24 hours to appear for activation and up to 24 hours to take effect. A would enforce tagging but does not make existing tags appear in cost reports. C is unnecessary; budgets can filter on tags only once the cost data carries them. D is wrong because tags do not need re-creation of resources and nothing is inherited that way.",
+    "section": "Budgets and cost allocation tags",
+    "reference": {
+     "label": "Activating user-defined cost allocation tags",
+     "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html"
+    }
+   },
+   {
+    "id": "kc-toolkit-2",
+    "type": "multi",
+    "question": "A learner wants lab cleanup to be safe and repeatable. Select TWO correct statements about deleting a CloudFormation stack.",
+    "options": [
+     {
+      "key": "A",
+      "text": "Resources are deleted unless a DeletionPolicy such as Retain is set"
+     },
+     {
+      "key": "B",
+      "text": "A Retain resource is removed from billing once the stack is deleted"
+     },
+     {
+      "key": "C",
+      "text": "Once stack deletion starts it cannot be stopped"
+     },
+     {
+      "key": "D",
+      "text": "Snapshot DeletionPolicy keeps the original resource and deletes the snapshot"
+     },
+     {
+      "key": "E",
+      "text": "Deletion always succeeds, so DELETE_FAILED does not exist"
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A and C are stated in the documentation: by default CloudFormation deletes resources unless a deletion policy retains them, and deletion in progress cannot be stopped. B is wrong because a retained resource continues to exist and you are still charged for it. D reverses Snapshot: it creates a snapshot and then deletes the resource. E is wrong because stacks can enter DELETE_FAILED, after which you can retry and optionally retain the failed resources.",
+    "section": "CloudShell and cleanup",
+    "reference": {
+     "label": "Delete a stack from the console",
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html"
+    }
+   },
+   {
+    "id": "kc-toolkit-3",
+    "type": "single",
+    "question": "A question asks for a solution with the 'least operational overhead' and two options both meet the stated RTO, security and budget. How should you decide?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Choose the option with more manual runbooks because humans catch errors"
+     },
+     {
+      "key": "B",
+      "text": "Choose the option that uses a managed or automated service for the undifferentiated work"
+     },
+     {
+      "key": "C",
+      "text": "Choose the option with the largest number of Regions"
+     },
+     {
+      "key": "D",
+      "text": "Skip the question and return only if time remains, leaving it blank if not"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B follows the elimination method: hard constraints are already satisfied, so the qualifier decides, and 'least operational overhead' points to managed or automated services. A increases manual work. C adds scope that nothing in the stem asks for. D is poor because unanswered questions are scored incorrect and there is no penalty for guessing; always provide an answer.",
+    "section": "Reading scenario questions",
+    "reference": {
+     "label": "SAP-C02 exam guide",
+     "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html"
+    }
+   },
+   {
+    "id": "kc-toolkit-4",
+    "type": "single",
+    "question": "Which statement about AWS CloudShell is supported by the AWS documentation?",
+    "options": [
+     {
+      "key": "A",
+      "text": "It requires you to configure long-lived access keys before use"
+     },
+     {
+      "key": "B",
+      "text": "It inherits the credentials of the console user and provides up to 1 GB of persistent home-directory storage per Region"
+     },
+     {
+      "key": "C",
+      "text": "Its home directory is unlimited and retained forever"
+     },
+     {
+      "key": "D",
+      "text": "It only supports PowerShell"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B matches the documentation: CloudShell uses the signed-in console user's credentials and offers up to 1 GB of persistent storage per Region at no additional cost. A is wrong because credentials are inherited automatically. C is wrong because storage is capped and data is deleted 120 days after the last session in a Region unless you launch it again. D is wrong because Bash, PowerShell and Zsh are all available.",
+    "section": "CloudShell and cleanup",
+    "reference": {
+     "label": "What is AWS CloudShell?",
+     "url": "https://docs.aws.amazon.com/cloudshell/latest/userguide/welcome.html"
+    }
+   }
+  ],
+  "review:scenario-review": [
+   {
+    "id": "kc-review-1",
+    "type": "single",
+    "question": "In a scenario the stem states an RTO of 15 minutes and near-zero RPO for a database. Which option is eliminated first on hard constraints?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Warm standby in a second Region with continuous replication"
+     },
+     {
+      "key": "B",
+      "text": "Multi-site active/active with synchronous-style replication"
+     },
+     {
+      "key": "C",
+      "text": "Nightly backup and restore into a second Region"
+     },
+     {
+      "key": "D",
+      "text": "Multi-AZ deployment with automatic failover"
+     }
+    ],
+    "answer": "C",
+    "explanation": "C is eliminated: restoring from nightly backups gives a recovery point up to a day old and a restore time that normally exceeds 15 minutes, so it fails both numeric constraints. A and B can meet a short RTO and low RPO depending on design and budget. D addresses AZ-level failure and is a building block; the stem would decide whether regional failure also matters. The skill tested is eliminating on numbers before applying cost.",
+    "section": "Scenario 5: Resilience improvement for a regional outage",
+    "reference": {
+     "label": "Well-Architected pillars",
+     "url": "https://docs.aws.amazon.com/wellarchitected/latest/migration-lens/well-architected-framework-pillars.html"
+    }
+   },
+   {
+    "id": "kc-review-2",
+    "type": "multi",
+    "question": "A company must exit a data center in 9 months with little refactoring capacity. Select TWO sound decisions.",
+    "options": [
+     {
+      "key": "A",
+      "text": "Rehost most servers first and modernise later"
+     },
+     {
+      "key": "B",
+      "text": "Refactor every application before any migration"
+     },
+     {
+      "key": "C",
+      "text": "Plan migrations in waves after discovery and assessment"
+     },
+     {
+      "key": "D",
+      "text": "Wait for a full redesign of the monolith before starting"
+     },
+     {
+      "key": "E",
+      "text": "Skip discovery to save time"
+     }
+    ],
+    "answer": "AC",
+    "explanation": "A and C match a time-constrained migration: rehosting meets the deadline and waves based on assessment sequence the work. B and D both delay migration and violate the 9-month constraint. E removes the dependency knowledge needed to group servers into waves and increases cutover risk. These choices are explained in the migration lessons.",
+    "section": "Scenario 2: Migration plus modernization",
+    "reference": {
+     "label": "SAP-C02 exam guide",
+     "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html"
+    }
+   },
+   {
+    "id": "kc-review-3",
+    "type": "single",
+    "question": "After reviewing a practice test you notice you often pick designs that are technically valid but larger than the stem requires. What is the best corrective action?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Memorise more service limits"
+     },
+     {
+      "key": "B",
+      "text": "Before choosing, list the stated RTO/RPO, budget and qualifier, and choose the minimum design that satisfies them"
+     },
+     {
+      "key": "C",
+      "text": "Always choose the cheapest option"
+     },
+     {
+      "key": "D",
+      "text": "Choose the option with the most AWS services"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B directly addresses the cause (over-building) by anchoring to stated numbers and the qualifier. A treats it as a knowledge gap when it is a reading/decision error. C overcorrects: cost is only one pillar and the cheapest option may break a hard constraint. D increases complexity and cost, usually the opposite of what the stem asks.",
+    "section": "How to review mistakes",
+    "reference": {
+     "label": "The pillars of the Well-Architected Framework",
+     "url": "https://docs.aws.amazon.com/wellarchitected/latest/migration-lens/well-architected-framework-pillars.html"
+    }
+   },
+   {
+    "id": "kc-review-4",
+    "type": "single",
+    "question": "In the security-hardening scenario, which action best preserves evidence while containing an exposed access key?",
+    "options": [
+     {
+      "key": "A",
+      "text": "Delete the account's resources immediately"
+     },
+     {
+      "key": "B",
+      "text": "Revoke or disable the key, review CloudTrail activity, and move to role-based temporary credentials"
+     },
+     {
+      "key": "C",
+      "text": "Rotate nothing and rely on security groups"
+     },
+     {
+      "key": "D",
+      "text": "Wait for the weekly manual review"
+     }
+    ],
+    "answer": "B",
+    "explanation": "B contains the exposure without destroying evidence, and CloudTrail provides the activity record for investigation. A destroys evidence and causes downtime, violating the constraints. C is wrong because security groups do not control IAM credential use. D leaves the key active and does not scale across accounts. Details are in the security lessons.",
+    "section": "Scenario 3: Security incident hardening",
+    "reference": {
+     "label": "SAP-C02 exam guide",
+     "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html"
+    }
+   }
+  ]
+ }
+};

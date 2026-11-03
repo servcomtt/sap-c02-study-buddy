@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SAP-C02 Study Buddy — AWS Certified Solutions Architect – Professional</title>
+    <meta name="description" content="Offline SAP-C02 AWS architecture study app: lessons, scenarios, hands-on labs, flashcards and a practice question bank." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="assets/sapc02-course-map.svg" type="image/svg+xml" />
+    <!-- Applies the saved light/dark/system theme before first paint. -->
+    <script src="theme-init.js?v=20261020a"></script>
+    <link rel="stylesheet" href="tokens.css?v=20261020a" />
+    <link rel="stylesheet" href="styles.css?v=20261025d" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Course navigation">
+        <div class="sidebar-controls">
+          <button class="sidebar-toggle" data-action="toggle-sidebar" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">
+            <span data-icon="panel-left-close"></span>
+          </button>
+          <button class="sidebar-close" data-action="close-nav" type="button" aria-label="Close navigation menu" title="Close navigation menu">
+            <span data-icon="x"></span>
+          </button>
+        </div>
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">SAP-C02</div>
+          <div>
+            <p>SAP-C02 Study Buddy</p>
+            <span>AWS Certified Solutions Architect – Professional</span>
+          </div>
+        </div>
+
+        <label class="search-box" for="globalSearch">
+          <span>Search</span>
+          <input id="globalSearch" type="search" autocomplete="off" />
+        </label>
+
+        <nav class="module-nav" id="moduleNav" aria-label="Course"></nav>
+
+        <div class="sidebar-actions">
+          <button class="button ghost full" data-action="export-progress" type="button">Export progress</button>
+          <button class="button ghost full" data-action="import-progress" type="button">Import progress</button>
+          <button class="button ghost full" data-action="reset-progress" type="button">Reset Progress</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-lead">
+            <button
+              class="nav-toggle"
+              type="button"
+              data-action="toggle-nav"
+              aria-label="Open navigation menu"
+              aria-controls="sidebar"
+              aria-expanded="false"
+            ><span data-icon="menu"></span></button>
+            <div class="topbar-heading">
+              <p class="eyebrow">AWS Certified Solutions Architect – Professional</p>
+              <h1 id="viewTitle">Course Dashboard</h1>
+            </div>
+          </div>
+          <div class="topbar-tools">
+            <div class="view-tabs" role="group" aria-label="Primary views">
+              <button class="tab-button" data-view="dashboard" type="button">Dashboard</button>
+              <button class="tab-button" data-view="practice" type="button">Practice</button>
+            </div>
+            <fieldset class="theme-switch">
+              <legend class="sr-only">Theme</legend>
+              <label class="theme-option" title="Light theme">
+                <input type="radio" name="theme" value="light" />
+                <span data-icon="sun"></span><span class="sr-only">Light</span>
+              </label>
+              <label class="theme-option" title="Dark theme">
+                <input type="radio" name="theme" value="dark" />
+                <span data-icon="moon"></span><span class="sr-only">Dark</span>
+              </label>
+              <label class="theme-option" title="Match system theme">
+                <input type="radio" name="theme" value="system" />
+                <span data-icon="monitor"></span><span class="sr-only">System</span>
+              </label>
+            </fieldset>
+          </div>
+        </header>
+
+        <section class="content" id="app" aria-live="polite"></section>
+        <p class="sr-only" id="copyStatus" role="status" aria-live="polite"></p>
+      </main>
+
+      <div class="sidebar-scrim" data-action="close-nav" aria-hidden="true"></div>
+    </div>
+
+    <script src="bank-loader.js"></script>
+    <script src="data.js?v=20261024f" defer></script>
+    <script src="storage.js?v=20261019a" defer></script>
+    <script src="icons.js?v=20261022a" defer></script>
+    <script src="quiz-data.js?v=20261024f" defer></script>
+    <script src="quiz.js?v=20261024a" defer></script>
+    <script src="content.js?v=20261024f" defer></script>
+    <script src="learn-links.js?v=20261024f" defer></script>
+    <script src="labs.js?v=20260718e" defer></script>
+    <script src="lab-guides.js?v=20260718f" defer></script>
+    <script src="knowledge-checks.js?v=20261024f" defer></script>
+    <script src="knowledge-check.js?v=20261023a" defer></script>
+    <script src="app.js?v=20261025d" defer></script>
+  </body>
+</html>
